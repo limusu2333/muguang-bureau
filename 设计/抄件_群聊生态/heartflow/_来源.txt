@@ -1,0 +1,11 @@
+仓库URL: https://github.com/advent259141/Astrbot_plugin_Heartflow
+克隆HEAD commit: adc5c2125dd407361a8bcea6bc7c78782df61551
+克隆方式: git clone --depth 1（2026-07-03）
+协议: AGPL-3.0（LICENSE 已随附）⚠️ 传染性最强的协议，抄思路可以，直接搬代码需整项目 AGPL
+拷贝的文件:
+- README.md
+- main.py（全部核心：JudgeResult 五维打分、ChatState 精力系统、judge_with_tiny_model、
+  _extract_json 稳健解析、系统提示词小模型压缩缓存、on_llm_request 注入"主动参与"提示）
+- _conf_schema.json（阈值/权重/精力参数默认值）
+- LICENSE
+备注: 实际是五维（README说四维基础上加了 continuity 对话连贯性维度）

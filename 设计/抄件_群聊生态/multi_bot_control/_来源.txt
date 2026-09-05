@@ -1,0 +1,13 @@
+仓库URL: https://github.com/QingchenWait/astrbot_plugin_multi_bot_control
+克隆HEAD commit: abd58235e0a781bd8f6d456181411ec064444802
+克隆方式: git clone --depth 1（2026-07-03）
+协议: GPL-3.0（LICENSE 已随附）
+版本: v0.2.2
+拷贝的文件:
+- README.md / STRUCTURE.md
+- main.py（全部限流核心：BotSessionState、_can_accept_bot_request、_commit_bot_reply、
+  _self_rank_delay 排队、inject_bot_prompt 提示词注入、_stable_message_hash 重复消息过滤）
+- _conf_schema.json（所有限流参数默认值、bot_prompt_template 默认模板）
+- LICENSE
+- test_core.py（原 tests/test_core.py，限流逻辑单测，可当行为规格看）
+未拷贝: logo.png、metadata.yaml、DEVELOP.md、.gitattributes

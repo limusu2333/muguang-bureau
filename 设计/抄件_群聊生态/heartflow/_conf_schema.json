@@ -1,0 +1,105 @@
+{
+  "enable_heartflow": {
+    "description": "启用心流主动回复",
+    "type": "bool",
+    "default": false,
+    "hint": "启用后，机器人将智能判断群聊消息并主动回复"
+  },
+  "judge_provider_name": {
+    "description": "判断模型提供商",
+    "type": "string",
+    "default": "",
+    "hint": "用于小参数模型判断的提供商，建议使用Gemini 2.0 Flash等快速小模型",
+    "_special": "select_provider"
+  },
+  "reply_threshold": {
+    "description": "回复阈值(0-1)",
+    "type": "float",
+    "default": 0.6,
+    "hint": "超过此阈值才会主动回复，值越高越严格"
+  },
+  "energy_decay_rate": {
+    "description": "精力衰减速度",
+    "type": "float",
+    "default": 0.1,
+    "hint": "每次回复后精力下降的幅度，影响后续回复的积极性"
+  },
+  "energy_recovery_rate": {
+    "description": "精力恢复速度",
+    "type": "float",
+    "default": 0.02,
+    "hint": "每次不回复时精力恢复的幅度"
+  },
+  "context_messages_count": {
+    "description": "上下文消息数量",
+    "type": "int",
+    "default": 5,
+    "hint": "判断时考虑的最近消息数量"
+  },
+  "whitelist_enabled": {
+    "description": "启用群聊白名单",
+    "type": "bool",
+    "default": false,
+    "hint": "启用后只有白名单中的群聊才会触发心流回复"
+  },
+  "chat_whitelist": {
+    "description": "群聊白名单",
+    "type": "list",
+    "default": [],
+    "hint": "允许心流回复的群聊sid列表，/sid获取"
+  },
+  "judge_relevance": {
+    "description": "判断权重的内容相关度",
+    "type": "float",
+    "default": 0.25,
+    "hint": "针对判断权重的内容相关度设置，默认25%"
+  },
+  "judge_willingness": {
+    "description": "判断权重的回复意愿",
+    "type": "float",
+    "default": 0.2,
+    "hint": "针对判断权重的回复意愿设置，默认20%"
+  },
+  "judge_social": {
+    "description": "判断权重的社交适宜性",
+    "type": "float",
+    "default": 0.2,
+    "hint": "针对判断权重的社交适宜性设置，默认20%"
+  },
+  "judge_timing": {
+    "description": "判断权重的时机相关性",
+    "type": "float",
+    "default": 0.15,
+    "hint": "针对判断权重的时机相关性设置，默认15%"
+  },
+  "judge_continuity": {
+    "description": "判断权重的对话连贯性",
+    "type": "float",
+    "default": 0.2,
+    "hint": "针对判断权重的对话连贯性设置，默认20%"
+  },
+  "judge_include_reasoning": {
+    "description": "判断时是否包含理由",
+    "type": "bool",
+    "default": true,
+    "hint": "让小模型在判断时返回详细理由。关闭可轻微提升性能和鲁棒性。"
+  },
+  "judge_max_retries": {
+    "description": "判断失败最大重试次数",
+    "type": "int",
+    "default": 3,
+    "hint": "当小模型返回无效JSON时的最大重试次数，设为0时不重试，建议1-5次"
+  },
+  "judge_context_count": {
+    "description": "传入判断模型的上下文条数",
+    "type": "int",
+    "default": 10,
+    "hint": "传给判断模型的对话历史条数，独立于context_messages_count，建议设置更大的值以提升判断质量"
+  },
+  "min_reply_interval_seconds": {
+    "description": "最短回复间隔（秒）",
+    "type": "int",
+    "default": 0,
+    "hint": "两次心流主动触发之间的最短间隔秒数，0表示不限制，可防止机器人过于频繁发言"
+  }
+}

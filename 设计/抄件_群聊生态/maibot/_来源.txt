@@ -1,0 +1,29 @@
+仓库URL: https://github.com/MaiM-with-u/MaiBot.git
+克隆HEAD commit: af9b377c16cbde553b3e3dc4d1cf6994736cb6b3
+克隆位置: 本机 scratchpad/maibot（此前已克隆，本次从中摘取）
+协议: GPL-3.0（LICENSE 已随附）
+拷贝的文件（保持原目录层级，源路径 src/learners/ 与 src/maisaka/）:
+
+learners/（表达学习 + 黑话学习）
+- expression_learner.py（学群友说话风格：ExpressionLearner、并发闸门、_filter_expressions、
+  situation->style 入库与合并、向量索引同步）
+- expression_utils.py（parse_expression_response / parse_jargon_response / 适宜性AI审核）
+- expression_style_utils.py（style 清洗规则）
+- expression_review_store.py（AI审核日志）
+- jargon_learner.py（黑话抽取批次：素材过滤、source_id 证据定位、缓存命中回填）
+- jargon_miner.py（黑话入库与含义推断：JARGON_INFERENCE_THRESHOLDS=[4,8,25,100]、
+  三段式推断 with_context/content_only/compare、LRU缓存50条）
+- jargon_explainer.py（把黑话含义注入回复上下文）
+
+reply_effect/（回复效果追踪，管"说完之后学没学到"）
+- tracker.py（观察窗600秒、目标用户2条/全会话5条 followup 上限、负反馈提前结算）
+- scoring.py（ASI = 0.45行为 + 0.35感知 + 0.20(1-摩擦)，正/负/修复中文模式词表）
+- judge.py（LLM窄维度评审：social_presence/warmth/competence/appropriateness/uncanny_risk）
+- models.py / storage.py（数据结构与JSON落盘）
+
+focus/（发言节奏 / 专注模式）
+- manager.py（FocusModeManager：FOCUS_SLOT_LIMIT=1、focus组作用域、cool_time默认120s、
+  释放后禁止立即回抢 release_focus_and_block_next_entry）
+- runtime_mixin.py（FOCUS_NO_ACTION_EXIT_THRESHOLD=5：连续5次空闲循环自动退出专注、冷却定时唤醒）
+
+未拷贝: 其余 src/ 全部（behavior_* 行为学习线、maisaka 主循环等）、learner_utils_old.py（旧版）

@@ -1,0 +1,14 @@
+仓库URL: https://github.com/HikariFroya/astrbot-plugin-relaychat
+克隆HEAD commit: d359254433f7471c3cca8b009ed003933ec049bb
+克隆方式: git clone --depth 1（2026-07-03）
+协议: 仓库内无 LICENSE 文件，未声明开源协议 ⚠️ 只作学习参考，勿直接复制代码发布
+拷贝的文件:
+- README.md
+- main.py（连锁调度主体：@after_message_sent 钩子 + _schedule_internal_chain_trigger 模拟事件注入）
+- _conf_schema.json / config_template.yaml（配置结构与默认值）
+- utils/decision_utils.py（DecisionModule.should_reply：黑名单→私聊强制→连锁概率→关键词→对话激励→基础概率）
+- utils/llm_module.py（LLM锁、请求准备）
+- utils/persona_utils.py（按人格名取 system_prompt / 模型）
+- utils/history_storage.py（多bot共享历史存储）
+- utils/message_utils.py / image_caption.py / __init__.py
+未拷贝: __pycache__/、.gitignore

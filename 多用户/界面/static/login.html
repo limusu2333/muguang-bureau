@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light" />
+    <title>开发公司 · 登录</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="/auth-ui/auth.css?v=20260811-option-a3" />
+  </head>
+  <body>
+    <div class="auth-backdrop" aria-hidden="true">
+      <i></i><i></i><i></i><i></i>
+    </div>
+
+    <main class="auth-stage">
+      <div class="auth-brand" id="auth-brand" aria-label="开发公司 版本读取中">
+        <span class="company-mark" aria-hidden="true">开</span>
+        <strong>开发公司</strong>
+        <small id="auth-version">版本读取中…</small>
+      </div>
+
+      <section class="auth-dialog" aria-labelledby="auth-title">
+        <div class="dialog-heading">
+          <h1 id="auth-title">登录公司</h1>
+          <p id="auth-subtitle">使用已授权账户进入</p>
+        </div>
+
+        <form id="auth-form" novalidate>
+          <label class="field" id="email-field">
+            <strong>账户</strong>
+            <input id="email" name="account" type="text" maxlength="320" autocomplete="username" required />
+          </label>
+          <label class="field">
+            <strong id="password-label">密码</strong>
+            <span class="password-field">
+              <input id="password" name="password" type="password" minlength="8" maxlength="128" autocomplete="current-password" required />
+              <button id="password-toggle" class="password-toggle" type="button" aria-label="显示密码" title="显示密码">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.1 12s3.6-7 9.9-7 9.9 7 9.9 7-3.6 7-9.9 7-9.9-7-9.9-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </span>
+          </label>
+          <p class="form-message" id="form-message" aria-live="polite"></p>
+          <button class="primary-action" id="submit-button" type="submit">
+            <span>进入公司</span>
+          </button>
+        </form>
+      </section>
+    </main>
+    <script src="/auth-ui/auth.js?v=20260902-runtime-identity" defer></script>
+  </body>
+</html>

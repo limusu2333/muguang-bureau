@@ -1,0 +1,159 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>MUNAEA · 全息舰桥 · 动态预览</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#0b0c0f;font-family:-apple-system,"PingFang SC","Helvetica Neue",sans-serif;color:#eef1f4;-webkit-font-smoothing:antialiased}
+canvas#c{position:fixed;inset:0;width:100vw;height:100vh}
+.mono{font-family:ui-monospace,Menlo,monospace}
+.hatch{position:fixed;top:11vh;bottom:9vh;width:30vw;background:repeating-linear-gradient(45deg,rgba(255,255,255,.024) 0 1px,transparent 1px 8px);pointer-events:none;z-index:1}
+.idx{position:fixed;font-family:ui-monospace,Menlo,monospace;font-size:9.5px;letter-spacing:1px;color:rgba(238,241,244,.22);z-index:3}
+.ro{position:fixed;font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:2.5px;color:rgba(238,241,244,.4);z-index:6}
+nav{position:fixed;left:50%;top:34px;transform:translateX(-50%);display:flex;gap:52px;z-index:7}
+nav a{position:relative;font-size:12.5px;letter-spacing:4px;color:rgba(238,241,244,.5);text-decoration:none;padding-top:10px;white-space:nowrap}
+nav a.on{color:#fff}
+nav a.on::before{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);width:16px;height:2px;background:#e8a34c}
+nav a .bdg{display:inline-block;width:5px;height:5px;border-radius:50%;background:#ff5f4d;margin-left:8px;vertical-align:3px;box-shadow:0 0 9px rgba(255,95,77,.8);animation:bdg 2.2s ease-in-out infinite;font-size:0}
+@keyframes bdg{0%,100%{opacity:1}50%{opacity:.35}}
+.grad{background:linear-gradient(115deg,#fff 20%,#c3d3ec 45%,#b9c8f2 60%,#e3c9ea 82%);-webkit-background-clip:text;background-clip:text;color:transparent}
+#callouts{position:fixed;inset:0;pointer-events:none;z-index:4}
+.co{position:fixed;font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:2px;color:rgba(238,241,244,.55);z-index:5;white-space:nowrap}
+.co small{display:block;color:rgba(238,241,244,.3);font-size:9.5px;letter-spacing:1.5px;margin-top:3px}
+#wm{position:fixed;left:50%;bottom:-4vh;transform:translateX(-50%);font-weight:700;font-size:17vw;letter-spacing:1.2vw;line-height:1;color:transparent;-webkit-text-stroke:1px rgba(255,255,255,.045);z-index:0;user-select:none;white-space:nowrap}
+#say{position:fixed;left:50%;bottom:11vh;transform:translateX(-50%);width:min(620px,74vw);z-index:7}
+#say .line{display:flex;align-items:baseline;gap:14px;padding-bottom:13px}
+#say .tri{color:#e8a34c;font-size:12px}
+#say .ph{font-size:15px;letter-spacing:1px;color:rgba(238,241,244,.45)}
+#say .caret{display:inline-block;width:8px;height:16px;background:rgba(238,241,244,.75);vertical-align:-2px;animation:blink 1.1s steps(1) infinite;margin-left:2px}
+#say .ul{height:1px;background:linear-gradient(90deg,#e8a34c 0 22px,rgba(255,255,255,.28) 22px 60%,rgba(255,255,255,.05))}
+#say .hint{font-family:ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:2px;color:rgba(238,241,244,.25);margin-top:9px;text-align:right}
+@keyframes blink{0%,55%{opacity:1}60%,100%{opacity:0}}
+@media (max-width:1180px){.ro{display:none}.idx{display:none}}
+#narrow{display:none;position:fixed;inset:0;z-index:99;background:#0b0c0f;color:#eef1f4;align-items:center;justify-content:center;text-align:center;font-size:15px;line-height:2}
+</style></head><body>
+<canvas id="c"></canvas>
+<div id="narrow">这扇窗太窄了，看不出它真实的样子。<br>请在浏览器里全屏打开。</div>
+<div class="hatch" style="left:0"></div>
+<div class="hatch" style="right:0"></div>
+<div id="wm">MUNAEA</div>
+
+<nav>
+  <a class="on" href="#">大厅</a><a href="#">场次</a><a href="#">班子</a><a href="#">记忆库</a><a href="#">待你拍板<span class="bdg">1</span></a><a href="#">设置</a>
+</nav>
+
+<span class="ro" style="left:40px;top:34px">MUNAEA <span style="color:#e8a34c">▸</span> 深夜在线</span>
+<span class="ro mono" style="right:40px;top:34px"><span id="clk">23:41:07</span> · LINK <span style="color:#7fd4b5">●</span></span>
+<span class="ro" style="left:40px;bottom:30px">SCENE 41 · STANDBY</span>
+<span class="ro" style="right:40px;bottom:30px">MEM +2 · CREW 5</span>
+<span class="idx" style="left:40px;top:11vh">01</span>
+<span class="idx" style="right:40px;top:11vh">01</span>
+<span class="idx" style="left:40px;bottom:9vh">02</span>
+<span class="idx" style="right:40px;bottom:9vh">02</span>
+
+<svg id="callouts"></svg>
+<div class="co" id="co1">核心 · 在场 <small>CORE / IDLE · BREATH 0.5HZ</small></div>
+<div class="co" id="co2" style="text-align:right">五人待命 · 记忆 +2 <small>CREW STANDBY / MEM SYNCED</small></div>
+
+<div style="position:fixed;left:0;right:0;bottom:24vh;text-align:center;z-index:5;pointer-events:none">
+  <div class="grad" style="font-size:min(3.6vw,54px);font-weight:300;letter-spacing:10px;text-indent:10px">晚上好，主人</div>
+  <div style="font-size:12.5px;color:rgba(238,241,244,.4);margin-top:16px;letter-spacing:5px">公司在场 · 说话即开工</div>
+</div>
+
+<div id="say">
+  <div class="line"><span class="tri">▸</span><span class="ph">对公司下达指令</span><span class="caret"></span></div>
+  <div class="ul"></div>
+  <div class="hint">⌘ ↵ 执行 · 空格按住说话</div>
+</div>
+
+<script>
+var cv=document.getElementById('c'),ctx=cv.getContext('2d');
+var DPR=Math.min(2,window.devicePixelRatio||1),W,H,CX,CY,RAD;
+function size(){W=innerWidth;H=innerHeight;cv.width=W*DPR;cv.height=H*DPR;ctx.setTransform(DPR,0,0,DPR,0,0);CX=W/2;CY=H*0.40;
+RAD=Math.max(150,Math.min(W*0.185,H*0.36,295));
+document.getElementById('narrow').style.display=W<760?'flex':'none';
+layoutCallouts();}
+function layoutCallouts(){
+  var svg=document.getElementById('callouts');
+  var c1=document.getElementById('co1'),c2=document.getElementById('co2');
+  var x1=CX-RAD*1.62, y1=CY-RAD*0.62;
+  var x2=CX+RAD*1.28, y2=CY+RAD*0.55;
+  c1.style.left=Math.max(30,x1-10)+'px'; c1.style.top=(y1-30)+'px';
+  c2.style.left=(x2+90-c2.offsetWidth)+'px'; c2.style.top=(y2+16)+'px';
+  svg.setAttribute('width',W);svg.setAttribute('height',H);
+  svg.innerHTML='<line x1="'+(x1+66)+'" y1="'+(y1-8)+'" x2="'+(CX-RAD*0.86)+'" y2="'+(CY-RAD*0.13)+'" stroke="rgba(238,241,244,.22)" stroke-width="1"/>'+
+  '<circle cx="'+(CX-RAD*0.86)+'" cy="'+(CY-RAD*0.13)+'" r="2.2" fill="rgba(238,241,244,.5)"/>'+
+  '<line x1="'+(x2+58)+'" y1="'+(y2+10)+'" x2="'+(CX+RAD*0.8)+'" y2="'+(CY+RAD*0.2)+'" stroke="rgba(238,241,244,.22)" stroke-width="1"/>'+
+  '<circle cx="'+(CX+RAD*0.8)+'" cy="'+(CY+RAD*0.2)+'" r="2.2" fill="rgba(238,241,244,.5)"/>';
+}
+size();addEventListener('resize',size);
+function R(a,b){return a+Math.random()*(b-a)}
+function hue(t){t=(t%1+1)%1;if(t<0.3)return 205+t/0.3*55;if(t<0.55)return 260+(t-0.3)/0.25*50;if(t<0.8)return 310+(t-0.55)/0.25*60;return 10+(t-0.8)/0.2*30}
+var SPR={};
+function sprite(h){var k=Math.round(h/10)*10;if(SPR[k])return SPR[k];
+var s=document.createElement('canvas');s.width=s.height=32;var x=s.getContext('2d');
+var g=x.createRadialGradient(16,16,0,16,16,16);
+g.addColorStop(0,'hsla('+k+',95%,85%,1)');g.addColorStop(0.25,'hsla('+k+',95%,70%,.85)');g.addColorStop(1,'hsla('+k+',95%,60%,0)');
+x.fillStyle=g;x.fillRect(0,0,32,32);SPR[k]=s;return s}
+var N=8200,P=[];
+for(var i=0;i<N;i++){
+  var r=Math.random(), layer=r<0.55?0:(r<0.86?1:2);
+  var spread=layer==0?0.04:(layer==1?0.11:0.24);
+  P.push({u:Math.random()*Math.PI*2,ox:R(-1,1)*spread,oy:R(-1,1)*spread*0.5,
+    du:R(0.0010,0.0028)*(Math.random()<0.07?2.4:1),
+    tw:Math.random()*6.283,tws:R(0.5,2.2),
+    sz:(layer==0?R(0.5,1.1):(layer==1?R(0.6,1.5):R(1.2,2.6))),
+    am:(layer==0?1.15:(layer==1?0.75:0.4)),layer:layer});
+}
+var DUST=[],t=0,mx=0,my=0,tmx=0,tmy=0;
+addEventListener('mousemove',function(e){tmx=(e.clientX/W-0.5)*2;tmy=(e.clientY/H-0.5)*2});
+function frame(){
+  t+=0.016;mx+=(tmx-mx)*0.04;my+=(tmy-my)*0.04;
+  ctx.clearRect(0,0,W,H);
+  var bg=ctx.createRadialGradient(CX,CY,40,CX,CY,Math.max(W,H)*0.52);
+  bg.addColorStop(0,'rgba(24,28,46,0.5)');bg.addColorStop(.55,'rgba(11,12,18,0.25)');bg.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+  var breath=0.84+0.16*Math.sin(t*0.5);
+  var hueDrift=t*0.012;
+  var wob=0.035*Math.sin(t*0.16), tiltK=-0.10+0.02*Math.sin(t*0.11)+my*0.03;
+  var RX=RAD, RY=RAD*0.30*(1+wob*0.4);
+  var rollA=-0.06+wob+mx*0.05, cr=Math.cos(rollA), sr=Math.sin(rollA);
+  ctx.globalCompositeOperation='lighter';
+  for(var i=0;i<N;i++){
+    var p=P[i];p.u+=p.du;var a=p.u;
+    var rx=RX*(1+p.ox), ry=RY*(1+p.oy*2);
+    var x0=Math.cos(a)*rx, y0=Math.sin(a)*ry+Math.cos(a)*rx*tiltK;
+    var X=x0*cr-y0*sr, Y=x0*sr+y0*cr;
+    var sx=CX+X, sy=CY+Y;
+    var front=Math.sin(a)>0?1:0.52;
+    var twk=0.7+0.3*Math.sin(t*p.tws+p.tw);
+    var al=(0.16+0.42*front)*p.am*breath*twk;
+    var h=hue(a/6.283+hueDrift+0.02*Math.sin(a*2));
+    var s=sprite(h),d=p.sz*(p.layer==2?3.6:2.2)*(front>0.6?1.06:0.94);
+    ctx.globalAlpha=Math.min(0.8,al);
+    ctx.drawImage(s,sx-d/2,sy-d/2,d,d);
+    if(p.layer==1&&Math.random()<0.0011){
+      DUST.push({x:sx,y:sy,vx:(sx-CX)*0.0013+R(-0.1,0.1),vy:-R(0.12,0.42),life:1,h:h,sz:R(0.6,1.3)});
+    }
+  }
+  for(var k=DUST.length-1;k>=0;k--){
+    var d2=DUST[k];d2.x+=d2.vx;d2.y+=d2.vy;d2.vy-=0.0012;d2.life-=0.006;
+    if(d2.life<=0){DUST.splice(k,1);continue}
+    ctx.globalAlpha=Math.min(0.5,d2.life*0.5)*breath;
+    var s2=sprite(d2.h),dd=d2.sz*3*(2-d2.life);
+    ctx.drawImage(s2,d2.x-dd/2,d2.y-dd/2,dd,dd);
+  }
+  var scanY=CY+((t*14)%(RY*4))-RY*2;
+  ctx.globalAlpha=0.05*breath;
+  ctx.fillStyle='#cfe0ff';
+  ctx.fillRect(CX-RX*1.25,scanY,RX*2.5,1);
+  var core=ctx.createRadialGradient(CX,CY,10,CX,CY,RX*0.95);
+  core.addColorStop(0,'rgba(190,205,255,'+(0.045*breath)+')');
+  core.addColorStop(0.7,'rgba(160,150,255,'+(0.018*breath)+')');
+  core.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.globalAlpha=1;ctx.globalCompositeOperation='lighter';
+  ctx.fillStyle=core;ctx.beginPath();ctx.ellipse(CX,CY,RX*0.96,RY*2.1,0,0,6.283);ctx.fill();
+  ctx.globalCompositeOperation='source-over';
+  requestAnimationFrame(frame);
+}
+frame();
+setInterval(function(){var d=new Date(),p=function(n){return String(n).padStart(2,'0')};document.getElementById('clk').textContent=p(d.getHours())+':'+p(d.getMinutes())+':'+p(d.getSeconds())},1000);
+</script>
+</body></html>

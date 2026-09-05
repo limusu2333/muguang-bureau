@@ -1,0 +1,172 @@
+.multiuser-account{
+  position:fixed;
+  top:25px;
+  right:34px;
+  z-index:32;
+  letter-spacing:0;
+}
+.account-trigger{
+  height:34px;
+  max-width:190px;
+  display:flex;
+  align-items:center;
+  gap:9px;
+  padding:0 4px 0 0;
+  color:var(--ink-dim);
+}
+.account-trigger:hover,.account-trigger[aria-expanded="true"]{color:var(--ink)}
+.account-avatar{
+  width:30px;
+  height:30px;
+  flex:none;
+  display:grid;
+  place-items:center;
+  border:1px solid var(--line-strong);
+  border-radius:50%;
+  background:rgba(17,20,28,.72);
+  color:var(--ink);
+  font-size:12px;
+  font-weight:600;
+}
+.account-name{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-size:12px;
+}
+.account-chevron{
+  width:7px;
+  height:7px;
+  flex:none;
+  border-right:1px solid currentColor;
+  border-bottom:1px solid currentColor;
+  transform:translateY(-2px) rotate(45deg);
+  transition:transform 160ms ease;
+}
+.account-trigger[aria-expanded="true"] .account-chevron{transform:translateY(2px) rotate(225deg)}
+.account-dropdown{
+  position:absolute;
+  top:43px;
+  right:0;
+  width:224px;
+  padding:8px;
+  border:1px solid var(--line);
+  border-radius:6px;
+  background:rgba(13,16,22,.94);
+  box-shadow:0 18px 50px rgba(0,0,0,.34);
+  backdrop-filter:blur(22px) saturate(1.2);
+}
+.account-summary{padding:9px 10px 11px;display:flex;flex-direction:column;gap:1px;min-width:0}
+.account-summary strong{overflow:hidden;text-overflow:ellipsis;font-size:12px;font-weight:600;color:var(--ink)}
+.account-summary span{overflow:hidden;text-overflow:ellipsis;font-size:10.5px;color:var(--meta);white-space:nowrap}
+.account-dropdown button{
+  width:100%;
+  height:38px;
+  display:flex;
+  align-items:center;
+  gap:11px;
+  padding:0 10px;
+  border-radius:4px;
+  color:var(--ink-dim);
+  font-size:12px;
+  text-align:left;
+}
+.account-dropdown button:hover{background:rgba(255,255,255,.06);color:var(--ink)}
+.account-divider{height:1px;margin:6px 4px;background:var(--hair)}
+.account-menu-icon{position:relative;width:16px;height:16px;flex:none;color:var(--meta)}
+.profile-icon::before{content:"";position:absolute;left:5px;top:1px;width:5px;height:5px;border:1px solid currentColor;border-radius:50%}
+.profile-icon::after{content:"";position:absolute;left:2px;bottom:1px;width:10px;height:6px;border:1px solid currentColor;border-radius:8px 8px 2px 2px}
+.logout-icon::before{content:"";position:absolute;left:1px;top:2px;width:8px;height:12px;border:1px solid currentColor;border-right:0;border-radius:2px 0 0 2px}
+.logout-icon::after{content:"→";position:absolute;right:0;top:-5px;font-size:17px;line-height:20px}
+
+.holo-root:has(.multiuser-account) > .readout.right.top{right:230px}
+.holo-root:has(.multiuser-account) .visual-theme-toggle{right:196px}
+
+.profile-overlay{
+  position:fixed;
+  inset:0;
+  z-index:80;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+  background:rgba(5,7,10,.68);
+  backdrop-filter:blur(14px);
+}
+.profile-dialog{
+  width:min(520px,calc(100vw - 32px));
+  max-height:calc(100vh - 48px);
+  overflow:auto;
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:rgba(14,17,24,.97);
+  box-shadow:0 28px 80px rgba(0,0,0,.46);
+  color:var(--ink);
+  letter-spacing:0;
+}
+.profile-dialog > header{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  padding:22px 24px 18px;
+  border-bottom:1px solid var(--hair);
+}
+.profile-dialog header span{font-family:var(--mono);font-size:9px;color:var(--meta);letter-spacing:1.5px}
+.profile-dialog h2{margin:3px 0 0;font-size:19px;font-weight:560;letter-spacing:0}
+.profile-close{width:32px;height:32px;font-size:23px;line-height:1;color:var(--meta)}
+.profile-close:hover{color:var(--ink)}
+.profile-dialog form{display:flex;flex-direction:column;gap:17px;padding:22px 24px 24px}
+.profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.profile-dialog label{display:flex;flex-direction:column;gap:7px}
+.profile-dialog label > span,.profile-dialog legend{font-size:11px;color:var(--meta)}
+.profile-dialog input,.profile-dialog textarea{
+  width:100%;
+  border:1px solid var(--line);
+  border-radius:5px;
+  background:rgba(255,255,255,.045);
+  color:var(--ink);
+  font-size:13px;
+  letter-spacing:0;
+}
+.profile-dialog input{height:40px;padding:0 11px}
+.profile-dialog textarea{min-height:88px;padding:10px 11px;resize:vertical;line-height:1.6}
+.profile-dialog input:focus,.profile-dialog textarea:focus{border-color:var(--line-strong);box-shadow:0 0 0 2px rgba(232,163,76,.10)}
+.profile-dialog fieldset{min-width:0;margin:0;padding:0;border:0}
+.profile-dialog legend{margin-bottom:7px}
+.profile-theme-choice{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line);border-radius:5px;overflow:hidden}
+.profile-theme-choice button{height:38px;color:var(--meta);font-size:12px}
+.profile-theme-choice button + button{border-left:1px solid var(--line)}
+.profile-theme-choice button.on{background:rgba(232,163,76,.12);color:var(--ink)}
+.profile-error{margin:0;color:var(--red);font-size:11.5px}
+.profile-dialog footer{display:flex;justify-content:flex-end;gap:10px;padding-top:3px}
+.profile-dialog footer button{min-width:76px;height:38px;border:1px solid var(--line);border-radius:5px;color:var(--ink-dim)}
+.profile-dialog footer button:hover:not(:disabled){border-color:var(--line-strong);color:var(--ink)}
+.profile-dialog footer .profile-save{border-color:rgba(232,163,76,.34);background:rgba(232,163,76,.14);color:var(--ink)}
+
+.theme-mist .account-avatar{background:rgba(247,250,252,.62)}
+.theme-mist .account-dropdown,.theme-mist .profile-dialog{
+  background:rgba(245,249,251,.94);
+  box-shadow:0 22px 64px rgba(70,91,111,.20);
+}
+.theme-mist .account-dropdown button:hover{background:rgba(43,56,69,.06)}
+.theme-mist .profile-overlay{background:rgba(199,211,221,.62)}
+.theme-mist .profile-dialog input,.theme-mist .profile-dialog textarea{background:rgba(255,255,255,.58)}
+.theme-mist .profile-theme-choice button.on{background:rgba(155,120,104,.13)}
+
+@media (max-width:1180px){
+  .multiuser-account{right:24px}
+  .holo-root:has(.multiuser-account) .visual-theme-toggle{right:180px;top:29px}
+}
+@media (max-width:820px){
+  .account-name{display:none}
+  .account-trigger{gap:6px}
+  .holo-root:has(.multiuser-account) .visual-theme-toggle{right:92px;top:29px}
+}
+@media (max-width:560px){
+  .profile-overlay{padding:12px}
+  .profile-dialog{max-height:calc(100vh - 24px)}
+  .profile-dialog > header{padding:18px 18px 15px}
+  .profile-dialog form{padding:18px;gap:15px}
+  .profile-grid{grid-template-columns:1fr}
+}

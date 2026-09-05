@@ -1,0 +1,5 @@
+# macOS 宿主服务依赖。正式用户的 Linux 镜像只安装 requirements.txt。
+-r requirements.txt
+-r 多用户/requirements.txt
+mlx==0.32.1
+mlx-lm==0.31.3

@@ -1,0 +1,41 @@
+schema_version: 1
+account_id: acc_01JEXAMPLE0000000000000000
+instance_id: inst_01JEXAMPLE000000000000000
+owner:
+  owner_id: own_01JEXAMPLE0000000000000000
+  display_name: 示例用户
+  称呼: 示例用户
+  别名: []
+公司目的: 帮助实例主人完成自己的工作
+employees:
+  - employee_id: emp_pm
+    人名: 老钟
+    display_name: 老钟
+  - employee_id: emp_chief
+    人名: 老梁
+    display_name: 老梁
+  - employee_id: emp_engineer
+    人名: 阿强
+    display_name: 阿强
+  - employee_id: emp_test
+    人名: 老纪
+    display_name: 老纪
+  - employee_id: emp_writer
+    人名: 阿言
+    display_name: 阿言
+界面:
+  主题: default
+模型路由:
+  chat:
+    base_url: http://model-proxy:4000/v1
+    credential_ref: keychain://xj-multiuser/acc_01JEXAMPLE0000000000000000:chat
+  search:
+    base_url: http://search-gw:4100
+    credential_ref: keychain://xj-multiuser/acc_01JEXAMPLE0000000000000000:search
+预算:
+  月上限: null
+  日上限: null
+配额:
+  文件总量MB: 2048
+功能开关:
+  统一搜索: true

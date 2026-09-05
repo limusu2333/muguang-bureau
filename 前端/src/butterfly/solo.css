@@ -1,0 +1,118 @@
+:root { color-scheme: light; }
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font: 14px/1.6 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif;
+  color: #2b3742;
+  /* Mist, so the pearl wing reads: cool haze low, warm light high. */
+  background:
+    radial-gradient(120% 90% at 62% 8%, #fdfefe 0%, #eaf2f7 44%, #d5e3ec 74%, #c2d5e2 100%),
+    linear-gradient(180deg, #f4f9fb, #cddde8);
+  overflow: hidden;
+}
+
+.solo-stage { position: fixed; inset: 0; }
+
+.solo-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+
+/* Tracks the butterfly's real projected position — the click target must never
+   sit where the butterfly used to be. */
+.solo-marker {
+  position: absolute;
+  top: 0; left: 0;
+  width: 76px; height: 76px;
+  margin: -38px 0 0 -38px;
+  border: 1px dashed rgba(84, 128, 156, 0.42);
+  border-radius: 50%;
+  pointer-events: none;
+  will-change: transform;
+}
+.solo-marker::after {
+  content: "跟随点";
+  position: absolute;
+  left: 50%; top: 100%;
+  transform: translate(-50%, 4px);
+  font-size: 10px;
+  letter-spacing: .08em;
+  color: rgba(70, 108, 133, .6);
+  white-space: nowrap;
+}
+
+.solo-status {
+  position: absolute;
+  left: 20px; bottom: 16px;
+  font-size: 12px;
+  color: rgba(58, 88, 110, .78);
+}
+
+.solo-hud {
+  position: absolute;
+  right: 20px; bottom: 16px;
+  padding: 10px 13px;
+  font: 11px/1.7 ui-monospace, SFMono-Regular, Menlo, monospace;
+  color: #3d5a6d;
+  background: rgba(255, 255, 255, .58);
+  border: 1px solid rgba(140, 175, 197, .32);
+  border-radius: 9px;
+  backdrop-filter: blur(7px);
+  white-space: nowrap;
+}
+.solo-hud b { color: #1f6f8b; }
+
+.solo-panel {
+  position: fixed;
+  top: 18px; left: 20px;
+  width: 330px;
+  padding: 16px 18px;
+  background: rgba(255, 255, 255, .62);
+  border: 1px solid rgba(140, 175, 197, .3);
+  border-radius: 12px;
+  backdrop-filter: blur(9px);
+}
+.solo-panel h1 { margin: 0 0 6px; font-size: 15px; font-weight: 600; letter-spacing: .02em; }
+.solo-note { margin: 0 0 12px; font-size: 12px; color: #5b7688; }
+
+.solo-row { display: flex; gap: 8px; margin-bottom: 8px; }
+.solo-row button {
+  flex: 1;
+  padding: 7px 9px;
+  font: inherit;
+  font-size: 12px;
+  color: #33566a;
+  background: rgba(255, 255, 255, .72);
+  border: 1px solid rgba(120, 160, 185, .42);
+  border-radius: 7px;
+  cursor: pointer;
+}
+.solo-row button:hover:not(:disabled) { background: #fff; border-color: rgba(90, 140, 170, .7); }
+.solo-row button.on { background: #4d8aa8; border-color: #4d8aa8; color: #fff; }
+.solo-row button:disabled { opacity: .5; cursor: default; }
+
+.solo-report { margin-top: 10px; border-top: 1px solid rgba(140, 175, 197, .3); padding-top: 10px; }
+.solo-report > div { display: grid; grid-template-columns: 46px 1fr; gap: 2px 8px; margin-bottom: 9px; font-size: 11.5px; }
+.solo-report .mark { font-weight: 600; }
+.solo-report .ok .mark { color: #2e7d5b; }
+.solo-report .bad .mark { color: #b4453a; }
+.solo-report .what { color: #33566a; }
+.solo-report .detail { grid-column: 2; color: #7b93a3; font-size: 11px; }
+
+@media (max-width: 720px) {
+  .solo-panel { width: calc(100vw - 40px); }
+  .solo-hud { display: none; }
+}
+
+.solo-crash {
+  position: fixed;
+  inset: 24px;
+  padding: 18px;
+  overflow: auto;
+  font: 12px/1.6 ui-monospace, SFMono-Regular, Menlo, monospace;
+  color: #7e2b23;
+  background: rgba(255, 244, 242, .95);
+  border: 1px solid #e0b4ae;
+  border-radius: 10px;
+  white-space: pre-wrap;
+}

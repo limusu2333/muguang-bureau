@@ -1,0 +1,45 @@
+# astrbot_plugin_relaychat/config_template.yaml
+
+enable: true # 插件总开关
+log_level: "DEBUG" # 插件的日志级别
+
+# 当前 AstrBot 平台实例所扮演的人格名称
+# 这个名称需要与 AstrBot 全局“人格管理”中定义的人格名称一致。
+# 例如： "mcqueen", "goldshop", "hayakawa"
+persona_name: "default_persona"
+
+# 当前平台实例绑定的 VoceChat Bot 的物理 User ID
+# 这个 ID 用于在模拟连锁事件时，正确标记“上一个回复者”的物理身份。
+# 例如： "7", "9", "12"
+vocechat_bot_uid: "YOUR_BOT_PHYSICAL_UID"
+
+# --- 连锁回复设置 ---
+# 整个连锁对话的最大深度（例如，用户发言后，最多允许多少轮机器人间的连锁回复）
+max_chain_depth: 2
+
+# 机器人参与连锁回复的基础概率 (0.0 到 1.0)
+# 仅当该机器人有资格进行连锁回复时（即不是上一个回复者）此概率才生效
+chain_reply_probability: 0.75
+
+# --- 首次回复设置 (当收到用户直接消息时) ---
+# 触发首次回复的关键词列表（可选，如果为空则不基于关键词触发）
+# 格式： ["关键词1", "关键词2"]
+# 注意：这里的关键词是针对当前配置的 persona_name 的。
+keywords: []
+
+# 在没有关键词匹配（或未配置关键词）的情况下，首次回复的基础概率 (0.0 到 1.0)
+base_reply_probability: 0.1
+
+# 黑名单关键词列表（可选，如果消息包含这些词，则当前人格不回复）
+blacklist_keywords: ["不要回复我"]
+
+# --- 延迟设置 (秒) ---
+initial_reply_min_delay_seconds: 0.1 # 用户消息后，首次回复的最小延迟
+initial_reply_max_delay_seconds: 0.8 # 用户消息后，首次回复的最大延迟
+
+chain_reply_min_delay_seconds: 1.0  # 内部连锁回复的最小延迟
+chain_reply_max_delay_seconds: 3.0  # 内部连锁回复的最大延迟
+
+# --- 历史记录存储 (如果 HistoryStorage 由此插件的 config 控制) ---
+# history_storage_path: "data/relaychat_history" # 历史记录的存储路径
+# history_max_per_session: 50                 # 每个会话存储的最大历史条数

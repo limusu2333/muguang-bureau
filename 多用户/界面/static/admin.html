@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>开发公司 · 用户管理</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="/admin-ui/admin.css?v=20260904-announcement-history-edit" />
+  </head>
+  <body>
+    <div class="admin-shell" id="admin-shell" hidden>
+      <header class="admin-header">
+        <div class="admin-brand">
+          <span class="brand-mark">开</span>
+          <div><strong>开发公司</strong><small id="admin-context-label">管理中心</small></div>
+        </div>
+        <nav class="admin-tabs" aria-label="管理内容">
+          <button class="admin-tab active" data-view="accounts" type="button">用户</button>
+          <button class="admin-tab" data-view="announcements" type="button">公告</button>
+          <button class="admin-tab" data-view="feedback" type="button">反馈<span class="tab-badge" id="feedback-badge" hidden>0</span></button>
+        </nav>
+        <div class="header-actions">
+          <button class="quiet-button" id="restart-supervisor-button" type="button" title="重新加载多用户后台">重启后台</button>
+          <button class="icon-button" id="refresh-button" type="button" title="刷新" aria-label="刷新">↻</button>
+          <button class="release-button" id="release-button" type="button">版本发布</button>
+          <button class="primary-button" id="new-account-button" type="button">添加用户</button>
+          <button class="primary-button" id="new-announcement-button" type="button" hidden>发布公告</button>
+          <button class="icon-button" id="logout-button" type="button" title="退出管理" aria-label="退出管理">↪</button>
+        </div>
+      </header>
+
+      <main id="accounts-view">
+        <section class="summary-band" aria-label="账户概况">
+          <div><span>全部用户</span><strong id="count-all">0</strong></div>
+          <div><span>正在使用</span><strong id="count-active">0</strong></div>
+          <div><span>已停用</span><strong id="count-stopped">0</strong></div>
+        </section>
+
+        <section class="account-section">
+          <div class="section-heading">
+            <div><p>账户</p><h1>用户与授权</h1></div>
+            <label class="search-field">
+              <span class="sr-only">搜索用户</span>
+              <input id="search-input" type="search" placeholder="搜索姓名或邮箱" />
+            </label>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>用户</th><th>状态</th><th>登录设备</th><th>创建时间</th><th class="actions-column">操作</th></tr></thead>
+              <tbody id="account-list"></tbody>
+            </table>
+            <div class="empty-state" id="empty-state" hidden>还没有用户</div>
+          </div>
+        </section>
+      </main>
+
+      <main id="announcements-view" hidden>
+        <section class="announcement-section">
+          <div class="section-heading">
+            <div><p>消息</p><h1>用户公告</h1></div>
+            <p class="section-note">正式用户每次打开公司网页时显示</p>
+          </div>
+          <div class="announcement-list" id="announcement-list"></div>
+          <div class="empty-state" id="announcement-empty" hidden>还没有公告</div>
+        </section>
+      </main>
+
+      <main id="feedback-view" hidden>
+        <section class="feedback-section">
+          <div class="section-heading">
+            <div><p>使用意见</p><h1>用户反馈</h1></div>
+            <label class="feedback-filter"><span class="sr-only">筛选状态</span><select id="feedback-filter"><option value="">全部状态</option><option>待处理</option><option>处理中</option><option>已解决</option><option>不处理</option></select></label>
+          </div>
+          <div class="table-wrap feedback-table-wrap">
+            <table class="feedback-table">
+              <thead><tr><th>状态</th><th>用户</th><th>类型</th><th>反馈内容</th><th>提交时间</th><th class="actions-column">查看</th></tr></thead>
+              <tbody id="feedback-list"></tbody>
+            </table>
+            <div class="empty-state" id="feedback-empty" hidden>还没有反馈</div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div class="admin-gate" id="admin-gate">
+      <form class="gate-dialog" id="owner-form">
+        <button class="gate-close" id="owner-close" type="button" aria-label="关闭" title="关闭">×</button>
+        <header>
+          <h1 id="owner-title">登录公司</h1>
+          <span id="owner-subtitle">使用已授权账户进入</span>
+        </header>
+        <div class="company-identity" id="owner-company-identity" aria-label="开发公司 版本读取中">
+          <span class="company-mark">开</span>
+          <strong>开发公司</strong>
+          <span id="owner-version">版本读取中…</span>
+        </div>
+        <div class="glass-fields">
+          <label><strong>账户</strong><input id="owner-account" name="username" type="text" maxlength="320" autocomplete="username" required aria-label="账户" /></label>
+          <label><strong>密码</strong><span class="glass-password"><input id="owner-password" type="password" minlength="8" maxlength="128" autocomplete="current-password" required aria-label="密码" /><button class="glass-eye" id="owner-password-toggle" type="button" aria-label="显示密码" title="显示密码"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.1 12s3.6-7 9.9-7 9.9 7 9.9 7-3.6 7-9.9 7-9.9-7-9.9-7Z"/><circle cx="12" cy="12" r="3"/></svg></button></span></label>
+        </div>
+        <p class="form-message" id="owner-message" aria-live="polite"></p>
+        <button class="primary-button full" id="owner-submit" type="submit">进入公司</button>
+      </form>
+    </div>
+
+    <dialog id="account-dialog">
+      <form id="account-form" method="dialog">
+        <div class="dialog-header"><div><p>授权新用户</p><h2>添加用户</h2></div><button class="icon-button" type="button" data-dialog-close aria-label="关闭" title="关闭">×</button></div>
+        <div class="form-grid">
+          <label><span>姓名</span><input name="display_name" maxlength="32" required /></label>
+          <label><span>希望怎么称呼</span><input name="call_name" maxlength="32" placeholder="例如：张女士" required /></label>
+          <label class="wide"><span>登录邮箱</span><input name="email" type="email" autocomplete="off" required /></label>
+          <label class="wide"><span>这间公司的目的</span><textarea name="company_purpose" maxlength="200" rows="3" required>帮我把手上的工作做好</textarea></label>
+          <details class="wide">
+            <summary>费用上限</summary>
+            <div class="budget-grid">
+              <label><span>聊天每日（美元）</span><input name="chat_daily_usd" type="number" min="0.01" step="0.01" value="1" /></label>
+              <label><span>聊天每月（美元）</span><input name="chat_monthly_usd" type="number" min="0.01" step="0.01" value="20" /></label>
+              <label><span>搜索每日（美元）</span><input name="search_daily_usd" type="number" min="0.01" step="0.01" value="0.2" /></label>
+              <label><span>搜索每月（美元）</span><input name="search_monthly_usd" type="number" min="0.01" step="0.01" value="5" /></label>
+            </div>
+          </details>
+        </div>
+        <p class="form-message" id="account-message" aria-live="polite"></p>
+        <div class="dialog-actions"><button class="quiet-button" type="button" data-dialog-close>取消</button><button class="primary-button" id="create-account-button" value="default">创建并生成邀请</button></div>
+      </form>
+    </dialog>
+
+    <dialog id="invite-dialog">
+      <div class="dialog-header"><div><p>一次性链接</p><h2 id="invite-title">邀请已经生成</h2></div><button class="icon-button" id="invite-close" aria-label="关闭" title="关闭">×</button></div>
+      <p class="invite-copy">把下面的链接发给用户。她打开后设置自己的密码，即可进入独立公司。</p>
+      <div class="copy-row"><input id="invite-value" readonly /><button class="primary-button" id="copy-button" type="button">复制</button></div>
+      <p class="invite-note" id="invite-note"></p>
+    </dialog>
+
+    <dialog id="confirm-dialog">
+      <form id="confirm-form" method="dialog">
+        <div class="dialog-header"><div><p id="confirm-kicker">确认操作</p><h2 id="confirm-title"></h2></div><button class="icon-button" type="button" data-dialog-close aria-label="关闭" title="关闭">×</button></div>
+        <p class="confirm-copy" id="confirm-copy"></p>
+        <label id="confirm-input-wrap" hidden><span id="confirm-input-label">输入账户编号确认永久删除</span><input id="confirm-input" autocomplete="off" /></label>
+        <p class="form-message" id="confirm-message" aria-live="polite"></p>
+        <div class="dialog-actions"><button class="quiet-button" type="button" data-dialog-close>取消</button><button class="danger-button" id="confirm-button" value="default">确认</button></div>
+      </form>
+    </dialog>
+
+    <dialog id="supervisor-restart-dialog">
+      <form id="supervisor-restart-form" method="dialog">
+        <div class="dialog-header"><div><p>后台维护</p><h2>重启多用户后台</h2></div><button class="icon-button" type="button" data-dialog-close aria-label="关闭" title="关闭">×</button></div>
+        <div class="supervisor-restart-body">
+          <p>这会重新加载后台服务，让新代码生效。用户资料、账号、版本和发布记录都不会改变；期间后台和用户入口会短暂断开。</p>
+          <div class="supervisor-restart-progress" id="supervisor-restart-progress" hidden>
+            <span class="progress-dot" aria-hidden="true"></span>
+            <div><strong id="supervisor-restart-stage">等待开始</strong><small id="supervisor-restart-message"></small></div>
+          </div>
+          <p class="form-message" id="supervisor-restart-error" aria-live="polite"></p>
+        </div>
+        <div class="dialog-actions"><button class="quiet-button" type="button" data-dialog-close>取消</button><button class="primary-button" id="supervisor-restart-confirm" value="default">确认重启</button></div>
+      </form>
+    </dialog>
+
+    <dialog id="release-dialog">
+      <form id="release-form" method="dialog">
+        <div class="dialog-header"><div><p id="release-kicker">开发版发布</p><h2 id="release-title">版本发布</h2></div><button class="icon-button" type="button" data-dialog-close aria-label="关闭" title="关闭">×</button></div>
+        <div class="release-body">
+          <div class="release-facts">
+            <div><span>产品版本</span><code id="release-version">—</code></div>
+            <div><span>更新账号</span><strong id="release-targets">0</strong></div>
+          </div>
+          <div class="release-sources" id="release-sources">
+            <div class="release-source-item" id="release-development-source">
+              <span>唯一发布源</span>
+              <div><code id="release-source-commit">—</code><small id="release-source-time">—</small></div>
+              <p id="release-source-summary">—</p>
+            </div>
+            <div class="release-source-item">
+              <span>当前运行</span>
+              <div><code id="release-current">开发版</code></div>
+              <p>只有全部账号健康后才会切换</p>
+            </div>
+          </div>
+          <section class="release-track-note" id="release-track-note">
+            <div class="release-section-heading"><strong>运行边界</strong><small>开发版与正式版分开运行</small></div>
+            <p id="release-track-copy">开发版仅供管理员验收与生成候选；分发账号继续运行已发布正式版。</p>
+          </section>
+          <section class="release-bootstrap" id="release-bootstrap" hidden aria-live="polite">
+            <div class="release-section-heading"><strong>首次宿主引导</strong><small id="release-bootstrap-kind"></small></div>
+            <p id="release-bootstrap-copy"></p>
+          </section>
+          <section class="release-host-approval" id="release-host-approval" hidden aria-live="polite">
+            <div class="release-section-heading"><strong>需要您确认运行环境</strong><small>不会切换正式服务</small></div>
+            <p id="release-host-approval-copy"></p>
+            <button class="quiet-button" id="release-host-approval-confirm" type="button">批准并建立候选隔离环境</button>
+          </section>
+          <section class="release-outcome" id="release-outcome" hidden aria-live="polite">
+            <strong id="release-outcome-title"></strong>
+            <p id="release-account-effect"></p>
+          </section>
+          <p class="release-copy" id="release-copy"></p>
+          <div class="release-progress" id="release-progress" hidden>
+            <span class="progress-dot" aria-hidden="true"></span>
+            <div><strong id="release-stage">等待开始</strong><small id="release-counts"></small></div>
+          </div>
+          <section class="release-timeline" id="release-timeline-wrap" hidden>
+            <div class="release-section-heading"><strong>执行过程</strong><small id="release-timeline-count"></small></div>
+            <ol id="release-timeline"></ol>
+          </section>
+          <section class="release-failure" id="release-failure" hidden>
+            <div class="release-section-heading"><strong id="release-failure-phase">未通过</strong><small id="release-failure-code"></small></div>
+            <p id="release-failure-summary"></p>
+            <ul id="release-failed-checks"></ul>
+            <div class="release-next-action" id="release-next-action" hidden><span>下一步</span><p></p></div>
+          </section>
+          <details class="release-log" id="release-log-details" hidden>
+            <summary>查看本次候选的执行日志</summary>
+            <div class="release-log-head"><span id="release-log-meta">展开后加载</span><button class="quiet-button" id="release-log-refresh" type="button">刷新日志</button></div>
+            <pre id="release-log-content">尚未加载</pre>
+            <p class="form-message" id="release-log-message" aria-live="polite"></p>
+          </details>
+          <label id="release-notes-wrap"><span>更新说明</span><textarea id="release-notes" maxlength="1000" rows="4" placeholder="这次更新了什么"></textarea></label>
+          <label id="release-name-wrap" hidden><span>正式版本名称</span><input id="release-name" maxlength="80" placeholder="例如：暮光v1.1beta版" /></label>
+          <p class="form-message" id="release-message" aria-live="polite"></p>
+          <section class="release-history" id="release-history" hidden>
+            <div class="release-section-heading"><strong>最近尝试</strong><small id="release-history-count"></small></div>
+            <ol id="release-history-list"></ol>
+          </section>
+          <div class="release-rollback" id="release-rollback" hidden>
+            <label><span>回退到</span><select id="release-rollback-version"></select></label>
+            <button class="quiet-button" id="release-rollback-confirm" type="button">回退选定版本</button>
+          </div>
+        </div>
+        <div class="dialog-actions"><button class="quiet-button" type="button" data-dialog-close>关闭</button><button class="release-button" id="release-confirm" value="default">生成候选</button></div>
+      </form>
+    </dialog>
+
+    <dialog id="announcement-dialog">
+      <form id="announcement-form" method="dialog">
+        <div class="dialog-header"><div><p id="announcement-dialog-kicker">打开网页时显示</p><h2 id="announcement-dialog-title">发布公告</h2></div><button class="icon-button" type="button" data-dialog-close aria-label="关闭" title="关闭">×</button></div>
+        <div class="announcement-form-body">
+          <label><span>标题</span><input id="announcement-title" maxlength="60" required placeholder="例如：本次测试更新说明" /></label>
+          <section class="announcement-composer" aria-labelledby="announcement-body-label">
+            <div class="announcement-editor-heading"><span id="announcement-body-label">正文</span><small id="announcement-count">0 / 8000</small></div>
+            <div class="announcement-toolbar" id="announcement-toolbar" role="toolbar" aria-label="公告排版">
+              <label><span class="sr-only">段落样式</span><select id="announcement-block-style" aria-label="段落样式"><option value="">段落</option><option value="p">正文</option><option value="h3">小标题</option></select></label>
+              <label><span class="sr-only">字体</span><select id="announcement-font" aria-label="字体"><option value="">字体</option><option value="Iowan Old Style">宋体</option><option value="Inter">黑体</option><option value="SFMono-Regular">等宽</option></select></label>
+              <label><span class="sr-only">字号</span><select id="announcement-size" aria-label="字号"><option value="">字号</option><option value="2">小字</option><option value="3">正文</option><option value="4">大字</option></select></label>
+              <button type="button" data-editor-command="bold" aria-label="加粗" title="加粗"><strong>B</strong></button>
+              <button type="button" data-editor-command="insertUnorderedList" aria-label="项目列表" title="项目列表">• 列表</button>
+              <button type="button" data-editor-command="insertOrderedList" aria-label="编号列表" title="编号列表">1. 列表</button>
+              <span class="announcement-toolbar-divider" aria-hidden></span>
+              <div class="announcement-colors" aria-label="文字颜色">
+                <button type="button" data-editor-color="#b47a2f" aria-label="金色" title="金色"></button>
+                <button type="button" data-editor-color="#256fa1" aria-label="蓝色" title="蓝色"></button>
+                <button type="button" data-editor-color="#a64b45" aria-label="红色" title="红色"></button>
+                <button type="button" data-editor-color="#38785d" aria-label="绿色" title="绿色"></button>
+                <button type="button" data-editor-color="#745694" aria-label="紫色" title="紫色"></button>
+              </div>
+              <div class="announcement-emoji-wrap">
+                <button type="button" id="announcement-emoji-toggle" aria-expanded="false" aria-controls="announcement-emoji-panel">😊 表情</button>
+                <div class="announcement-emoji-panel" id="announcement-emoji-panel" hidden>
+                  <button type="button" data-editor-emoji="✨">✨</button><button type="button" data-editor-emoji="🎉">🎉</button><button type="button" data-editor-emoji="📣">📣</button><button type="button" data-editor-emoji="✅">✅</button><button type="button" data-editor-emoji="🚀">🚀</button><button type="button" data-editor-emoji="💡">💡</button><button type="button" data-editor-emoji="❤️">❤️</button><button type="button" data-editor-emoji="😊">😊</button><button type="button" data-editor-emoji="🙏">🙏</button><button type="button" data-editor-emoji="⚠️">⚠️</button>
+                </div>
+              </div>
+              <button type="button" data-editor-command="removeFormat" aria-label="清除格式" title="清除所选文字的格式">清除格式</button>
+            </div>
+            <div class="announcement-editor-layout">
+              <div id="announcement-body" class="announcement-editor" contenteditable="true" role="textbox" aria-labelledby="announcement-body-label" aria-multiline="true" data-placeholder="写给用户看的内容。可以选择文字后设置字体、字号、加粗和颜色。"></div>
+              <aside class="announcement-preview" aria-label="用户预览">
+                <span>用户预览</span>
+                <article>
+                  <h3 id="announcement-preview-title">公告标题</h3>
+                  <div id="announcement-preview-body" class="announcement-rich-body is-empty">正文会在这里实时显示</div>
+                </article>
+              </aside>
+            </div>
+          </section>
+          <p class="form-message" id="announcement-message" aria-live="polite"></p>
+        </div>
+        <div class="dialog-actions"><button class="quiet-button" type="button" data-dialog-close>取消</button><button class="primary-button" id="announcement-confirm" value="default">发布公告</button></div>
+      </form>
+    </dialog>
+
+    <dialog id="feedback-dialog">
+      <form id="feedback-form" method="dialog">
+        <div class="dialog-header"><div><p id="feedback-detail-kind">用户反馈</p><h2 id="feedback-detail-title">反馈详情</h2></div><button class="icon-button" type="button" data-dialog-close aria-label="关闭" title="关闭">×</button></div>
+        <div class="feedback-detail">
+          <dl>
+            <div><dt>用户</dt><dd id="feedback-detail-user">—</dd></div>
+            <div><dt>提交时间</dt><dd id="feedback-detail-time">—</dd></div>
+            <div><dt>运行版本</dt><dd id="feedback-detail-version">—</dd></div>
+            <div><dt>所在页面</dt><dd id="feedback-detail-page">—</dd></div>
+          </dl>
+          <div class="feedback-detail-copy"><span>反馈内容</span><p id="feedback-detail-body"></p></div>
+          <figure id="feedback-detail-image-wrap" hidden><img id="feedback-detail-image" alt="用户提交的截图" /></figure>
+          <label class="feedback-status-field"><span>处理状态</span><select id="feedback-detail-status"><option>待处理</option><option>处理中</option><option>已解决</option><option>不处理</option></select></label>
+          <p class="form-message" id="feedback-message" aria-live="polite"></p>
+        </div>
+        <div class="dialog-actions"><button class="quiet-button" type="button" data-dialog-close>关闭</button><button class="primary-button" id="feedback-save" value="default">保存状态</button></div>
+      </form>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="/admin-ui/admin.js?v=20260904-announcement-history-edit" defer></script>
+  </body>
+</html>

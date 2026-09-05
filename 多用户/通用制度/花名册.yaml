@@ -1,0 +1,86 @@
+# 远程实例花名册。所有模型请求只发往内部 model-proxy；实例内没有供应商真实密钥。
+
+项目经理:
+  发言频率: 0.8
+  别名: [钟哥, 经理]
+  rank: 10
+  评级: 5
+  名字: 老钟
+  title: 项目经理
+  tier: 项目经理
+  provider: openai
+  model: gpt-5.6-sol
+  abilities: 复杂任务拆解,冲突整合,审批判断,风险权衡,长指令遵循,图像输入协助
+  ability_basis: 平台登记能力；实际可用性以当前实例点名核验结果为准
+  modality: 文本+图像输入；文本输出
+  routing: 优先处理立项分解,一级审批,权限申请预审,跨岗冲突,公司利益判断,视觉兜底裁决
+  key_env: OPENAI_API_KEY
+  base_url: http://model-proxy:4000/v1
+
+首席工程师:
+  发言频率: 0.4
+  别名: [梁工, 首席]
+  rank: 20
+  评级: 3
+  名字: 老梁
+  title: 首席工程师
+  tier: 首席工程师
+  provider: openai
+  model: qwen3.8-max
+  abilities: 复杂工程实现,核心代码,多文件改造,Agent任务,前端视觉核验,模型适配
+  ability_basis: 平台登记能力；实际可用性以当前实例点名核验结果为准
+  modality: 文本+图像输入；文本输出
+  routing: 优先处理核心逻辑,复杂工程修改,前端视觉核验,关键技术方案
+  key_env: BAILIAN_TOKEN_PLAN_API_KEY
+  base_url: http://model-proxy:4000/v1
+
+工程师:
+  发言频率: 0.4
+  别名: [强子]
+  rank: 30
+  评级: 2
+  名字: 阿强
+  title: 工程师
+  tier: 工程师
+  provider: openai
+  model: glm-5.2
+  abilities: 工程落地,接口接入,通道层,工具调用,长程Agent执行,配置核验,外部服务错误诊断
+  ability_basis: 平台登记能力；实际可用性以当前实例点名核验结果为准
+  modality: 文本输入；文本输出
+  routing: 优先处理接口,通道,模型接入,配置核验,普通工程实现
+  key_env: ZHIPU_API_KEY
+  base_url: http://model-proxy:4000/v1
+
+测试工程师:
+  发言频率: 0.3
+  别名: [纪工]
+  rank: 50
+  评级: 2
+  名字: 老纪
+  title: 测试工程师
+  tier: 测试工程师
+  provider: openai
+  model: deepseek-v4-pro-0813
+  abilities: 独立验证,反证测试,大上下文核查,回归报告,事实一致性审查,结构化输出,工具调用
+  ability_basis: 平台登记能力；实际可用性以当前实例点名核验结果为准
+  modality: 文本输入；文本输出
+  routing: 优先处理测试,回归基准,验收报告,代码审查,事实核查
+  key_env: BAILIAN_TOKEN_PLAN_API_KEY
+  base_url: http://model-proxy:4000/v1
+
+文案工程师（兼职）:
+  发言频率: 0.6
+  别名: [小言, 文案]
+  rank: 40
+  评级: 2
+  名字: 阿言
+  title: 文案工程师（兼职）
+  tier: 文案工程师（兼职）
+  provider: openai
+  model: deepseek-v4-pro-0813
+  abilities: 长文整理,事实校对,公告,变更记录,经验归档
+  ability_basis: 平台登记能力；实际可用性以当前实例点名核验结果为准
+  modality: 文本输入；文本输出
+  routing: 优先处理文档,公告,制度同步,经验升级记录,变更说明
+  key_env: BAILIAN_TOKEN_PLAN_API_KEY
+  base_url: http://model-proxy:4000/v1

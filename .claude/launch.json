@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "机房",
+      "runtimeExecutable": "${workspaceFolder}/.venv/bin/python3",
+      "runtimeArgs": ["工具/机房.py"],
+      "port": 8787
+    }
+  ]
+}

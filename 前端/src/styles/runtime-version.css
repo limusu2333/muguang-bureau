@@ -1,0 +1,20 @@
+.runtime-version-badge{
+  position:fixed;
+  right:28px;
+  bottom:9px;
+  z-index:200;
+  max-width:min(42vw,320px);
+  overflow:hidden;
+  color:var(--meta);
+  font-family:var(--mono);
+  font-size:9px;
+  line-height:1.35;
+  letter-spacing:0;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  pointer-events:none;
+}
+.theme-mist .runtime-version-badge{color:var(--meta)}
+@media (max-width:760px){
+  .runtime-version-badge{right:14px;bottom:10px;max-width:calc(100vw - 28px)}
+}

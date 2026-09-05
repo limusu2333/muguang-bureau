@@ -1,0 +1,107 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>MUNAEA · 打板 · 动态预览</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#08090c;font-family:-apple-system,"PingFang SC","Helvetica Neue",sans-serif;color:#eef1f4;-webkit-font-smoothing:antialiased}
+canvas#c{position:fixed;inset:0;width:100vw;height:100vh}
+.mono{font-family:ui-monospace,Menlo,monospace}
+.ro{position:fixed;font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:2.5px;color:rgba(238,241,244,.35);z-index:6}
+#card{position:fixed;left:50%;top:46%;transform:translate(-50%,-50%);z-index:6;text-align:center;width:min(680px,80vw)}
+#card .k{font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:5px;color:rgba(232,163,76,.75)}
+#card h1{font-size:36px;font-weight:300;letter-spacing:6px;margin:26px 0 18px;color:#f4f6f8}
+#card .sub{font-size:13.5px;letter-spacing:1px;color:rgba(238,241,244,.5);margin-bottom:34px}
+#files{display:inline-block;text-align:left;border-left:2px solid rgba(232,163,76,.55);padding:2px 0 2px 18px;margin-bottom:44px}
+#files .lb{font-size:10.5px;letter-spacing:3px;color:rgba(238,241,244,.35);font-family:ui-monospace,Menlo,monospace;margin-bottom:8px}
+#files .f{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;letter-spacing:1px;color:rgba(232,163,76,.85);line-height:2}
+#acts{display:flex;align-items:baseline;justify-content:center;gap:72px}
+#ok{position:relative;font-size:17px;letter-spacing:8px;color:#fff;cursor:pointer;padding-bottom:12px}
+#ok::after{content:"";position:absolute;left:10%;right:10%;bottom:0;height:2px;background:#e8a34c;box-shadow:0 0 10px rgba(232,163,76,.6);animation:ul 2.4s ease-in-out infinite}
+@keyframes ul{0%,100%{opacity:1}50%{opacity:.45}}
+#no{font-size:14.5px;letter-spacing:5px;color:rgba(238,241,244,.4);cursor:pointer}
+#card .after{font-family:ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:2px;color:rgba(238,241,244,.25);margin-top:40px}
+#flash{position:fixed;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:50}
+@media (max-width:1180px){.ro{display:none}}
+</style></head><body>
+<canvas id="c"></canvas>
+<div id="flash"></div>
+
+<span class="ro" style="left:40px;top:34px">判定时刻 <span style="color:#e8a34c">▸</span> 其余一切已让路</span>
+<span class="ro mono" style="right:40px;top:34px" id="clk">23:44:12</span>
+<span class="ro" style="left:40px;bottom:30px">SCENE 41 · 待判 1 项</span>
+<span class="ro" style="right:40px;bottom:30px">DIR · 示例主人</span>
+
+<div id="card">
+  <div class="k">SCENE 41 · TAKE 01 · 待你拍板</div>
+  <h1>她的房间 · 最小状态层</h1>
+  <div class="sub">阿强交付 · 老纪三条口径全绿 · pytest 7/7 · 老钟建议批</div>
+  <div id="files">
+    <div class="lb">真实动了的文件</div>
+    <div class="f">src/xj/state/state.py</div>
+    <div class="f">tests/state/test_state.py</div>
+  </div>
+  <div id="acts">
+    <span id="ok" onclick="clap()">批 准 · 打 板</span>
+    <span id="no">打 回</span>
+  </div>
+  <div class="after">批准后 · 舟提交入库 · 一次拍板一声板响</div>
+</div>
+
+<script>
+var cv=document.getElementById('c'),ctx=cv.getContext('2d');
+var DPR=Math.min(2,window.devicePixelRatio||1),W,H,CX,CY,RAD;
+function size(){W=innerWidth;H=innerHeight;cv.width=W*DPR;cv.height=H*DPR;ctx.setTransform(DPR,0,0,DPR,0,0);CX=W/2;CY=H*0.13;
+RAD=Math.max(70,Math.min(W*0.07,H*0.13,120))}
+size();addEventListener('resize',size);
+function R(a,b){return a+Math.random()*(b-a)}
+function hue(t){t=(t%1+1)%1;if(t<0.3)return 205+t/0.3*55;if(t<0.55)return 260+(t-0.3)/0.25*50;if(t<0.8)return 310+(t-0.55)/0.25*60;return 10+(t-0.8)/0.2*30}
+var SPR={};
+function sprite(h){var k=Math.round(h/10)*10;if(SPR[k])return SPR[k];
+var s=document.createElement('canvas');s.width=s.height=32;var x=s.getContext('2d');
+var g=x.createRadialGradient(16,16,0,16,16,16);
+g.addColorStop(0,'hsla('+k+',95%,85%,1)');g.addColorStop(0.25,'hsla('+k+',95%,70%,.85)');g.addColorStop(1,'hsla('+k+',95%,60%,0)');
+x.fillStyle=g;x.fillRect(0,0,32,32);SPR[k]=s;return s}
+var N=3600,P=[];
+for(var i=0;i<N;i++){
+  var r=Math.random(), layer=r<0.6?0:(r<0.9?1:2);
+  var spread=layer==0?0.035:(layer==1?0.09:0.18);
+  P.push({u:Math.random()*Math.PI*2,ox:R(-1,1)*spread,oy:R(-1,1)*spread*0.5,
+    du:R(0.0008,0.002),tw:Math.random()*6.283,tws:R(0.5,2),
+    sz:(layer==0?R(0.45,0.95):(layer==1?R(0.5,1.2):R(1,1.9))),
+    am:(layer==0?1:(layer==1?0.65:0.35)),layer:layer});
+}
+var t=0;
+function frame(){
+  t+=0.016;
+  ctx.clearRect(0,0,W,H);
+  var vg=ctx.createRadialGradient(CX,H*0.45,H*0.1,CX,H*0.45,H*0.85);
+  vg.addColorStop(0,'rgba(20,24,40,0.30)');vg.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=vg;ctx.fillRect(0,0,W,H);
+  var breath=0.5+0.1*Math.sin(t*0.4);
+  var hueDrift=t*0.008, tiltK=-0.10;
+  var RX=RAD, RY=RAD*0.3, rollA=-0.05, cr=Math.cos(rollA), sr=Math.sin(rollA);
+  ctx.globalCompositeOperation='lighter';
+  for(var i=0;i<N;i++){
+    var p=P[i];p.u+=p.du;var a=p.u;
+    var rx=RX*(1+p.ox), ry=RY*(1+p.oy*2);
+    var x0=Math.cos(a)*rx, y0=Math.sin(a)*ry+Math.cos(a)*rx*tiltK;
+    var X=x0*cr-y0*sr, Y=x0*sr+y0*cr;
+    var sx=CX+X, sy=CY+Y;
+    var front=Math.sin(a)>0?1:0.55;
+    var twk=0.75+0.25*Math.sin(t*p.tws+p.tw);
+    var al=(0.12+0.3*front)*p.am*breath*twk;
+    var h=hue(a/6.283+hueDrift);
+    var s=sprite(h),d=p.sz*2;
+    ctx.globalAlpha=Math.min(0.6,al);
+    ctx.drawImage(s,sx-d/2,sy-d/2,d,d);
+  }
+  ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';
+  requestAnimationFrame(frame);
+}
+frame();
+function clap(){
+  var f=document.getElementById('flash');
+  f.style.transition='none';f.style.opacity=.9;
+  setTimeout(function(){f.style.transition='opacity .5s';f.style.opacity=0},60);
+}
+setInterval(function(){var d=new Date(),p=function(n){return String(n).padStart(2,'0')};document.getElementById('clk').textContent=p(d.getHours())+':'+p(d.getMinutes())+':'+p(d.getSeconds())},1000);
+</script>
+</body></html>

@@ -1,0 +1,114 @@
+{
+    "enable": {
+        "description": "插件总开关",
+        "type": "bool",
+        "default": true
+    },
+    "log_level": {
+        "description": "插件的日志级别 (DEBUG, INFO, WARNING, ERROR)",
+        "type": "string",
+        "default": "DEBUG",
+        "options": ["DEBUG", "INFO", "WARNING", "ERROR"]
+    },
+    "max_chain_depth": {
+        "description": "连锁对话最大深度",
+        "type": "int",
+        "default": 1,
+        "hint": "由用户消息引发的对话连锁最多持续多少轮。"
+
+    },
+    "initial_reply_min_delay_seconds": {
+        "description": "用户消息后，首次回复的最小延迟 (秒)",
+        "type": "float",
+        "default": 0.1,
+        "hint": "重要功能，如果不理解用途不建议修改。"
+    },
+    "initial_reply_max_delay_seconds": {
+        "description": "用户消息后，首次回复的最大延迟 (秒)",
+        "type": "float",
+        "default": 0.8,
+        "hint": "重要功能，如果不理解用途不建议修改。"
+    },
+    "chain_reply_min_delay_seconds": {
+        "description": "内部连锁回复的最小延迟 (秒)",
+        "type": "float",
+        "default": 1.0,
+        "hint": "模拟真实感，可以随意更改"
+    },
+    "chain_reply_max_delay_seconds": {
+        "description": "内部连锁回复的最大延迟 (秒)",
+        "type": "float",
+        "default": 3.0,
+        "hint": "模拟真实感，可以随意更改"
+    },
+    "history_storage_path": {
+        "description": "聊天历史记录的存储路径",
+        "type": "string",
+        "default": "relaychat_history",
+        "hint": "相对于 AstrBot/data/ 目录"
+    },
+    "history_max_per_session": {
+        "description": "每个会话存储的最大历史条数",
+        "type": "int",
+        "default": 50
+    },
+    "llm_lock_release_delay_seconds": {
+        "description": "LLM 锁释放前的额外延迟 (秒)",
+        "type": "float",
+        "default": 1.0,
+        "hint": "重要功能，如果不理解用途不建议修改。"
+    },
+    "llm_max_history_default": {
+        "description": "LLM 调用时默认使用的最大历史消息条数",
+        "type": "int",
+        "default": 20,
+        "hint": "决定将多少历史消息放入上下文。"
+    },
+    "conversation_incentive_probability": {
+        "description": "对话激励回复概率 (0.0-1.0)",
+        "type": "float",
+        "default": 0.9,
+        "hint": "如果BOT处于对话激励状态的回复概率。"
+    },
+    "conversation_incentive_duration_seconds": {
+        "description": "对话激励持续时间 (秒)",
+        "type": "int",
+        "default": 120
+    },
+    "default_global_chain_reply_probability":{
+        "description": "全局默认的连锁回复概率 (如果 managed_bots 条目中未指定)",
+        "type": "float",
+        "default": 0.75
+    },
+    "default_global_base_reply_probability":{
+        "description": "全局默认的无关键词首次回复概率 (如果 managed_bots 条目中未指定)",
+        "type": "float",
+        "default": 0.1
+    },
+    "default_global_keywords": {
+        "description": "全局默认的触发首次回复的关键词列表 (如果 managed_bots 条目中未指定)",
+        "type": "list",
+        "items": {"type": "string"},
+        "default": [],
+        "hint": "这是一个全局默认值，会被 managed_bots 中对应条目的设置覆盖。"
+    },
+    "default_global_blacklist": {
+        "description": "全局默认的黑名单关键词列表 (如果 managed_bots 条目中未指定)",
+        "type": "list",
+        "items": {"type": "string"},
+        "default": [],
+        "hint": "这是一个全局默认值，会被 managed_bots 中对应条目的设置覆盖。"
+    },
+    "managed_bots": {
+        "description": "配置此插件管理的机器人角色 (每个条目是一行特定格式的字符串)。点击右侧'+添加'，然后在输入框中粘贴或输入配置字符串，按回车确认。",
+        "type": "list",
+        "items": {
+            "type": "string",
+            "description": "格式: PlatformID::PersonaName::BotUID::KeywordsJSON::BaseProb::ChainProb::BlacklistJSON",
+            "hint": "示例: Mcqueen::mcqueen::7::[\"麦昆\",\"梅ジロ\"]::0.2::0.8::[] \nKeywords和Blacklist是JSON列表字符串, 如 '[]' 或 '[\"词1\"]。"
+        },
+        "default": [],
+        "hint": "示例: 平台名::人格名::BOT账号的ID::[\"触发关键词1\",\"触发关键词2\"]::0.2（基础回复概率）::0.8（连锁时回复概率）::[\"黑名单关键词1\",\"黑名单关键词2\"]"
+
+    }
+}

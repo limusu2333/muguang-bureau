@@ -1,0 +1,17 @@
+schema_version: 1
+account_id: local
+instance_id: local
+owner:
+  owner_id: local-owner
+  display_name: 本机主人
+  称呼: 老板
+  别名: [老板, 先生]
+公司目的: 服务本机主人当前交给公司的工作
+模型路由: {}
+预算:
+  月上限: null
+  日上限: null
+配额:
+  文件总量MB: 2048
+功能开关:
+  统一搜索: true

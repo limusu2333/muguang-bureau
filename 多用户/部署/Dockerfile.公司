@@ -1,0 +1,68 @@
+FROM public.ecr.aws/docker/library/node:22.23.1-bookworm-slim AS frontend-build
+WORKDIR /build/前端
+COPY 前端/package.json 前端/package-lock.json ./
+RUN npm ci \
+    && npm install --no-save --package-lock=false @types/node@22.20.1
+COPY 前端/ ./
+COPY 多用户/部署/前端覆盖/ /tmp/xj-frontend-overlay/
+COPY 测试/ /build/测试/
+RUN node /tmp/xj-frontend-overlay/应用覆盖.mjs /build/前端 \
+    && node /tmp/xj-frontend-overlay/净化私有文本.mjs /build/测试
+RUN npm run build
+
+FROM public.ecr.aws/docker/library/python:3.14.6-slim-bookworm AS company-base
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONNOUSERSITE=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1
+RUN groupadd --gid 10001 app \
+    && useradd --uid 10001 --gid 10001 --create-home --home-dir /home/app app
+WORKDIR /app
+COPY requirements.txt /tmp/company-requirements.txt
+RUN pip install --no-cache-dir -r /tmp/company-requirements.txt \
+    && rm -f /tmp/company-requirements.txt
+COPY 工具/ /app/工具/
+COPY --from=frontend-build /build/前端/dist/ /app/前端/dist/
+COPY 多用户/渲染制度.py /app/多用户/渲染制度.py
+COPY 多用户/通用制度/ /opt/xj-policy-template/
+RUN find /app /opt/xj-policy-template -type d -exec chmod 0755 {} + \
+    && find /app /opt/xj-policy-template -type f -exec chmod 0444 {} +
+USER 10001:10001
+CMD ["python3", "-u", "/app/工具/机房.py"]
+
+FROM company-base AS company
+ARG XJ_COMPANY_VERSION=unversioned
+ARG XJ_FORMAL_SOURCE_SHA256=unknown
+ENV XJ_COMPANY_VERSION=${XJ_COMPANY_VERSION} \
+    XJ_FORMAL_SOURCE_SHA256=${XJ_FORMAL_SOURCE_SHA256}
+LABEL org.xj.company.version=${XJ_COMPANY_VERSION} \
+      org.xj.company.formal-source-sha256=${XJ_FORMAL_SOURCE_SHA256}
+
+FROM company-base AS runner
+USER 0:0
+COPY --from=frontend-build /usr/local/bin/node /usr/local/bin/node
+COPY --from=frontend-build /usr/local/lib/node_modules/ /usr/local/lib/node_modules/
+RUN ln -s /usr/local/lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm \
+    && ln -s /usr/local/lib/node_modules/npm/bin/npx-cli.js /usr/local/bin/npx
+COPY --from=frontend-build /build/测试/ /app/测试/
+COPY requirements.txt /app/requirements.txt
+COPY 多用户/requirements.txt /app/多用户-requirements.txt
+COPY 多用户/控制面/ /app/多用户/控制面/
+COPY 多用户/搜索网关/ /app/多用户/搜索网关/
+COPY 多用户/网关/ /app/多用户/网关/
+COPY 多用户/config/ /app/多用户/config/
+COPY 多用户/通用制度/ /app/多用户/通用制度/
+COPY 多用户/渲染制度.py /app/多用户/渲染制度.py
+COPY 多用户/部署/__init__.py 多用户/部署/发布仓库.py 多用户/部署/平台命令.py 多用户/部署/候选验收.py 多用户/部署/监督服务命令.py 多用户/部署/数据契约.json /app/多用户/部署/
+COPY 多用户/部署/Dockerfile.公司 多用户/部署/Dockerfile.平台 多用户/部署/compose.yaml 多用户/部署/litellm-config.yaml /app/多用户/部署/
+RUN pip install --no-cache-dir -r /app/多用户-requirements.txt
+COPY --from=frontend-build /build/前端/ /app/前端/
+RUN find /app -type d -exec chmod 0755 {} + \
+    && chown -R root:root /app
+ARG XJ_COMPANY_VERSION=unversioned
+ARG XJ_FORMAL_SOURCE_SHA256=unknown
+ENV XJ_COMPANY_VERSION=${XJ_COMPANY_VERSION} \
+    XJ_FORMAL_SOURCE_SHA256=${XJ_FORMAL_SOURCE_SHA256}
+LABEL org.xj.company.version=${XJ_COMPANY_VERSION} \
+      org.xj.company.formal-source-sha256=${XJ_FORMAL_SOURCE_SHA256}
+USER 10001:10001

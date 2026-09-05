@@ -1,0 +1,205 @@
+name: xj-multiuser
+
+x-service-security: &service-security
+  read_only: true
+  cap_drop: [ALL]
+  security_opt: [no-new-privileges:true]
+  restart: unless-stopped
+
+services:
+  postgres:
+    image: ${XJ_POSTGRES_IMAGE:-public.ecr.aws/docker/library/postgres:16.14-bookworm}
+    container_name: xj-postgres
+    environment:
+      POSTGRES_USER: xj_admin
+      POSTGRES_PASSWORD: ${XJ_POSTGRES_ADMIN_PASSWORD:?required}
+      LITELLM_DB_PASSWORD: ${XJ_LITELLM_DB_PASSWORD:?required}
+      SEARCH_DB_PASSWORD: ${XJ_SEARCH_DB_PASSWORD:?required}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./postgres-init/01-create-databases.sh:/docker-entrypoint-initdb.d/01-create-databases.sh:ro
+    networks: [net_db]
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U xj_admin -d postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    shm_size: 256mb
+    restart: unless-stopped
+    security_opt: [no-new-privileges:true]
+
+  model-proxy:
+    <<: *service-security
+    image: ${XJ_LITELLM_IMAGE:-ghcr.io/berriai/litellm-database:v1.86.2}
+    container_name: xj-model-proxy
+    command: [--config, /app/config.yaml, --port, "4000"]
+    environment:
+      LITELLM_MASTER_KEY: ${XJ_LITELLM_MASTER_KEY:?required}
+      DATABASE_URL: postgresql://litellm:${XJ_LITELLM_DB_PASSWORD:?required}@postgres:5432/litellm
+      XJ_OPENAI_API_BASE: ${XJ_OPENAI_API_BASE:?required}
+      XJ_OPENAI_API_KEY: ${XJ_OPENAI_API_KEY:?required}
+      XJ_QWEN_API_BASE: ${XJ_QWEN_API_BASE:?required}
+      XJ_QWEN_API_KEY: ${XJ_QWEN_API_KEY:?required}
+      XJ_GLM_API_BASE: ${XJ_GLM_API_BASE:?required}
+      XJ_GLM_API_KEY: ${XJ_GLM_API_KEY:?required}
+      XJ_DEEPSEEK_API_BASE: ${XJ_DEEPSEEK_API_BASE:?required}
+      XJ_DEEPSEEK_API_KEY: ${XJ_DEEPSEEK_API_KEY:?required}
+    volumes:
+      - ./litellm-config.yaml:/app/config.yaml:ro
+    ports:
+      - 127.0.0.1:4000:4000
+    networks: [net_db, egress]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: [CMD-SHELL, "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:4000/health/liveliness',timeout=3).read()\""]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+    tmpfs:
+      - /tmp:rw,nosuid,nodev,size=128m
+
+  search-gw:
+    <<: *service-security
+    build:
+      context: ../..
+      dockerfile: 多用户/部署/Dockerfile.平台
+    image: ${XJ_PLATFORM_IMAGE:-xj-platform:dev}
+    container_name: xj-search-gw
+    command: [python3, -m, uvicorn, 多用户.搜索网关.应用:app, --host, 0.0.0.0, --port, "4100", --no-proxy-headers]
+    environment:
+      XJ_SEARCH_DATABASE_URL: postgresql://xj_search:${XJ_SEARCH_DB_PASSWORD:?required}@postgres:5432/xj_search
+      XJ_SEARCH_ADMIN_TOKEN: ${XJ_SEARCH_ADMIN_TOKEN:?required}
+      EDITH_DASHSCOPE_REAL_KEY: ${XJ_DASHSCOPE_REAL_KEY:?required}
+      XJ_EMBED_USD_PER_MTOKENS: ${XJ_EMBED_USD_PER_MTOKENS:?required}
+      XJ_LOCAL_RERANK_URL: http://local-rerank-bridge:4101
+      XJ_RERANK_TOKEN: ${XJ_RERANK_TOKEN:?required}
+      XJ_BUDGET_TIMEZONE: Asia/Shanghai
+    ports:
+      - 127.0.0.1:4100:4100
+    networks: [net_db, egress]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      local-rerank-bridge:
+        condition: service_healthy
+    healthcheck:
+      test: [CMD, python3, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:4100/healthz',timeout=3).read()"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+    tmpfs:
+      - /tmp:rw,nosuid,nodev,size=64m
+
+  local-rerank-bridge:
+    <<: *service-security
+    image: ${XJ_PLATFORM_IMAGE:-xj-platform:dev}
+    container_name: xj-local-rerank-bridge
+    command: [python3, -m, 多用户.部署.精排中继]
+    environment:
+      XJ_RELAY_TARGET_HOST: host.docker.internal
+      XJ_RELAY_TARGET_PORT: "37657"
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    networks: [net_db, net_host]
+    healthcheck:
+      test: [CMD, python3, -c, "import socket; s=socket.create_connection(('127.0.0.1',4101),3); s.close()"]
+      interval: 5s
+      timeout: 4s
+      retries: 20
+
+  gw:
+    <<: *service-security
+    build:
+      context: ../..
+      dockerfile: 多用户/部署/Dockerfile.平台
+    image: ${XJ_PLATFORM_IMAGE:-xj-platform:dev}
+    container_name: xj-gw
+    user: "10002:10002"
+    command: [python3, -m, 多用户.网关.启动]
+    environment:
+      XJ_SUPERVISOR_URL: http://supervisor-bridge:8765
+      XJ_SUPERVISOR_TOKEN: ${XJ_SUPERVISOR_TOKEN:?required}
+      XJ_LOCAL_TEST_MODE: ${XJ_LOCAL_TEST_MODE:-0}
+    networks: [net_edge]
+    depends_on:
+      supervisor-bridge:
+        condition: service_healthy
+    healthcheck:
+      test: [CMD, python3, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8081/healthz',timeout=3).read()"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+    tmpfs:
+      - /tmp:rw,nosuid,nodev,size=64m
+
+  local-entry:
+    <<: *service-security
+    image: ${XJ_PLATFORM_IMAGE:-xj-platform:dev}
+    container_name: xj-local-entry
+    user: "10002:10002"
+    command: [python3, -m, 多用户.部署.本机入口]
+    ports:
+      - 127.0.0.1:37656:8080
+    networks: [net_edge, net_local]
+    depends_on:
+      gw:
+        condition: service_healthy
+    healthcheck:
+      test: [CMD, python3, -c, "import socket; s=socket.create_connection(('127.0.0.1',8080),3); s.close()"]
+      interval: 5s
+      timeout: 4s
+      retries: 20
+    tmpfs:
+      - /tmp:rw,nosuid,nodev,size=16m
+
+  supervisor-bridge:
+    <<: *service-security
+    image: ${XJ_PLATFORM_IMAGE:-xj-platform:dev}
+    container_name: xj-supervisor-bridge
+    command: [python3, -m, 多用户.部署.控制中继]
+    environment:
+      XJ_RELAY_TARGET_HOST: host.docker.internal
+      XJ_RELAY_TARGET_PORT: "37654"
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    networks: [net_edge, net_host]
+    healthcheck:
+      test: [CMD, python3, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8765/healthz',timeout=3).read()"]
+      interval: 5s
+      timeout: 4s
+      retries: 20
+    tmpfs:
+      - /tmp:rw,nosuid,nodev,size=32m
+
+  cloudflared:
+    <<: *service-security
+    image: ${XJ_CLOUDFLARED_IMAGE:-cloudflare/cloudflared:2026.7.2}
+    profiles: [public]
+    container_name: xj-cloudflared
+    command: [tunnel, --no-autoupdate, --loglevel, info, --metrics, 0.0.0.0:2000, run, --token, "${CF_TUNNEL_TOKEN:-}"]
+    ports:
+      - 127.0.0.1:37658:2000
+    networks: [net_edge, egress]
+    depends_on:
+      gw:
+        condition: service_healthy
+
+volumes:
+  postgres-data:
+    name: xj-postgres-data
+
+networks:
+  net_edge:
+    name: xj-net-edge
+    internal: true
+  net_db:
+    name: xj-net-db
+    internal: true
+  egress:
+    name: xj-egress
+  net_host:
+    name: xj-net-host
+  net_local:
+    name: xj-net-local

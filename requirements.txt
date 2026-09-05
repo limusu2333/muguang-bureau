@@ -1,0 +1,10 @@
+# 开发公司 · AgentScope 迁移依赖（官方标准）
+# 安装：python3 -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt
+# 说明：AgentScope 官方建议用虚拟环境安装；装上后用 `python -c "import agentscope,sys;print(agentscope.__version__)"` 记下实际版本回填本文件。
+agentscope==2.0.2
+ddgs==9.14.4
+httpx==0.28.1
+fastapi==0.139.0
+huggingface-hub==1.27.0
+PyYAML==6.0.3
+uvicorn==0.49.0

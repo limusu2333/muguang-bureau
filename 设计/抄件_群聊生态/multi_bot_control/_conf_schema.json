@@ -1,0 +1,244 @@
+{
+  "enabled": {
+    "description": "启用插件",
+    "type": "bool",
+    "default": true,
+    "hint": "关闭后不再拦截机器人消息，也不注入机器人专用提示词。"
+  },
+  "bot_registry": {
+    "description": "全局机器人名单",
+    "type": "object",
+    "items": {
+      "controlled_bots": {
+        "description": "由本 AstrBot 创建的受控机器人",
+        "type": "list",
+        "default": [],
+        "hint": "填写当前 AstrBot 实例能够控制、会主动调用 LLM 回复的机器人 QQ 号。当前识别以 QQ 号精确匹配为准，推荐使用 OneBot v11/aiocqhttp；QQ 官方 API 只提供 openid 时无法用 QQ 号匹配。",
+        "items": {
+          "qq": {
+            "description": "QQ 号",
+            "type": "string",
+            "default": ""
+          },
+          "name": {
+            "description": "机器人昵称",
+            "type": "string",
+            "default": ""
+          },
+          "call_name": {
+            "description": "对该机器人的称呼",
+            "type": "string",
+            "default": ""
+          },
+          "allow_interaction": {
+            "description": "允许与该机器人交互",
+            "type": "bool",
+            "default": true
+          }
+        }
+      },
+      "uncontrolled_bots": {
+        "description": "来源未知的不受控机器人",
+        "type": "list",
+        "default": [],
+        "hint": "填写同群中不能被本 AstrBot 控制、但需要被识别和限流的外部机器人 QQ 号。名单是全局名单，可在多个群聊中复用；统计与冷却会按群聊隔离。",
+        "items": {
+          "qq": {
+            "description": "QQ 号",
+            "type": "string",
+            "default": ""
+          },
+          "name": {
+            "description": "机器人昵称",
+            "type": "string",
+            "default": ""
+          },
+          "call_name": {
+            "description": "对该机器人的称呼",
+            "type": "string",
+            "default": ""
+          },
+          "allow_interaction": {
+            "description": "允许与该机器人交互",
+            "type": "bool",
+            "default": true
+          }
+        }
+      }
+    }
+  },
+  "targeting": {
+    "description": "机器人消息目标识别",
+    "type": "object",
+    "items": {
+      "require_explicit_target": {
+        "description": "机器人消息必须明确指向当前机器人",
+        "type": "bool",
+        "default": false,
+        "hint": "本插件不会主动唤醒机器人，只会在 AstrBot 原本已经被唤醒的机器人消息上做限制。开启后，名单内机器人还必须 @ 当前受控机器人、引用回复当前受控机器人，或符合下面目标规则才会被放行。"
+      },
+      "enable_reply_target": {
+        "description": "允许通过引用回复当前机器人识别目标",
+        "type": "bool",
+        "default": true,
+        "hint": "开启后，机器人引用回复当前受控机器人的消息会被视为指向当前受控机器人。"
+      },
+      "treat_at_all_as_target": {
+        "description": "将 @全体成员 视为指向当前机器人",
+        "type": "bool",
+        "default": false,
+        "hint": "建议保持关闭，避免其他机器人 @全体 时触发所有受控机器人。"
+      },
+      "treat_wake_prefix_as_target": {
+        "description": "将 AstrBot 唤醒前缀视为机器人对当前机器人的请求",
+        "type": "bool",
+        "default": false,
+        "hint": "仅在 AstrBot 已按原有唤醒规则识别到唤醒前缀时生效；不会让原本未唤醒的消息强制触发回复。多机器人群里其他机器人也可能使用 / 命令，建议默认关闭。"
+      }
+    }
+  },
+  "limits": {
+    "description": "机器人交互限制",
+    "type": "object",
+    "items": {
+      "enable_max_turns_per_session": {
+        "description": "启用单对机器人会话最大连续轮次限制",
+        "type": "bool",
+        "default": true,
+        "hint": "统计维度为：平台实例 + 群聊 + 当前受控机器人 + 对端机器人。不同群聊互不影响。"
+      },
+      "max_turns_per_session": {
+        "description": "单对机器人会话最大连续轮次",
+        "type": "int",
+        "default": 2
+      },
+      "enable_cooldown_after_limit": {
+        "description": "达到限制后进入冷却",
+        "type": "bool",
+        "default": true
+      },
+      "cooldown_seconds": {
+        "description": "达到限制后的冷却秒数",
+        "type": "int",
+        "default": 60
+      },
+      "bot_request_delay_seconds": {
+        "description": "识别到机器人请求后，调用 LLM 前等待的秒数",
+        "type": "int",
+        "default": 2,
+        "hint": "用于削峰，避免短时间大量 API 调用。"
+      },
+      "enable_min_interval_per_peer": {
+        "description": "启用同一对端机器人最小请求间隔",
+        "type": "bool",
+        "default": true
+      },
+      "min_interval_per_peer_seconds": {
+        "description": "同一对端机器人最小请求间隔秒数",
+        "type": "int",
+        "default": 5
+      },
+      "enable_group_window_limit": {
+        "description": "启用群级时间窗口限制",
+        "type": "bool",
+        "default": true,
+        "hint": "统计同一平台实例、同一群聊内所有名单机器人触发的回复数量，不会跨群共享。"
+      },
+      "group_window_seconds": {
+        "description": "群级时间窗口秒数",
+        "type": "int",
+        "default": 150
+      },
+      "max_bot_replies_per_group_window": {
+        "description": "同一群在时间窗口内最多允许的机器人对话数",
+        "type": "int",
+        "default": 6
+      },
+      "enable_without_human_limit": {
+        "description": "启用无人类介入时的连续机器人对话限制",
+        "type": "bool",
+        "default": true,
+        "hint": "人类消息会重置当前群的无人类统计；不同群聊独立统计。"
+      },
+      "without_human_window_seconds": {
+        "description": "无人类介入连续机器人对话统计窗口秒数",
+        "type": "int",
+        "default": 150
+      },
+      "max_bot_replies_without_human": {
+        "description": "无人类介入时最多允许的连续机器人对话数",
+        "type": "int",
+        "default": 10
+      },
+      "without_human_cooldown_seconds": {
+        "description": "连续机器人会话达到限制后的冷却秒数",
+        "type": "int",
+        "default": 90,
+        "hint": "在统计窗口内，无人类介入的连续机器人对话超过限制后，当前群所有受控机器人对 bot 的继续回复都会在该时间内被阻断。"
+      },
+      "enable_duplicate_message_limit": {
+        "description": "启用重复消息限制",
+        "type": "bool",
+        "default": true,
+        "hint": "在同一对机器人会话中检查重复消息。"
+      },
+      "duplicate_window_seconds": {
+        "description": "重复消息检查窗口秒数",
+        "type": "int",
+        "default": 60
+      },
+      "max_same_message_per_session": {
+        "description": "同一机器人会话中相同消息最多允许次数",
+        "type": "int",
+        "default": 5
+      }
+    }
+  },
+  "prompting": {
+    "description": "机器人称呼与回复风格",
+    "type": "object",
+    "items": {
+      "bot_prompt_template": {
+        "description": "机器人消息专用提示词模板",
+        "type": "text",
+        "editor_mode": true,
+        "editor_language": "markdown",
+        "hint": "可用通配符：<sendername> 对方机器人昵称，<botid> 对方机器人 QQ 号，<callname> 对方机器人称呼，<selfnickname> 当前受控机器人平台昵称。昵称/称呼只用于提示词，不参与身份识别。",
+        "default": "<bot_interaction>\n当前消息来自另一个机器人，不是普通用户。\n对方机器人平台昵称：<sendername>\n对方机器人显示名称：<callname>\n对方机器人 QQ：<botid>\n你必须称呼对方为：<sendername>。\n当对方询问自己是谁、自己的名字或昵称时，可以根据平台昵称 <sendername> 或称呼 <callname> 回答。\n当前受控机器人名称：<selfnickname>。\n不要使用普通用户称呼。\n</bot_interaction>"
+      },
+      "reply_style_prompt": {
+        "description": "机器人之间回复风格提示词",
+        "type": "text",
+        "editor_mode": true,
+        "editor_language": "markdown",
+        "default": "<bot_reply_style>\n不要主动反问，除非人类用户明确要求讨论。\n不要主动呼叫其他机器人。\n不要 @全体成员。\n不要模拟其他机器人的身份。\n</bot_reply_style>"
+      }
+    }
+  },
+  "multi_controlled": {
+    "description": "多受控机器人集体排队回复",
+    "type": "object",
+    "items": {
+      "enable_priority_order": {
+        "description": "同时指向多个受控机器人时按稳定优先级依次回复",
+        "type": "bool",
+        "default": true
+      },
+      "controlled_reply_spacing_seconds": {
+        "description": "相邻受控机器人回复间隔秒数",
+        "type": "int",
+        "default": 2
+      },
+      "priority_order": {
+        "description": "优先级排序方向",
+        "type": "string",
+        "default": "small_first",
+        "options": [
+          "small_first",
+          "large_first"
+        ],
+        "hint": "small_first 表示优先级数值越小越先回复。"
+      }
+    }
+  }
+}
