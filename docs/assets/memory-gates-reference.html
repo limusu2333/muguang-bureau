@@ -1,0 +1,200 @@
+<meta charset="UTF-8">
+<title>记忆五道闸·落地施工图</title>
+<style>
+  :root{
+    --bg:#0a0e15; --panel:#0e131c; --panel2:#111825; --line:#1b2330; --line2:#26303f;
+    --ink:#c6cdd6; --white:#f1f4f8; --mut:#6f7885;
+    --cyan:#58b7ca; --cyan2:#7fd0df; --cyandim:#3d7c8b; --amber:#c9a44f; --grn:#5aa889;
+    --sans:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
+    --mono:"SF Mono","Menlo","Consolas","Roboto Mono",monospace;
+  }
+  *{box-sizing:border-box}
+  .wrap{background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.72;font-size:16px;-webkit-font-smoothing:antialiased;
+    background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+    background-size:56px 56px;background-position:-1px -1px}
+  .col{max-width:1120px;margin:0 auto;padding:0 40px}
+  a{color:inherit}
+  /* header */
+  .hd{padding:64px 0 30px}
+  .eyebrow{font-family:var(--mono);font-size:12.5px;letter-spacing:.32em;color:var(--cyan);text-transform:uppercase}
+  h1{font-weight:800;font-size:76px;line-height:1.04;letter-spacing:-.01em;margin:22px 0 26px;color:var(--white);text-wrap:balance}
+  h1 .dot{color:var(--cyandim)}
+  .intro{font-size:18px;color:var(--ink);max-width:70ch;margin:0}
+  .intro b{color:var(--white)}
+  .intro .cy{color:var(--cyan2);font-weight:600}
+  .chips{display:flex;flex-wrap:wrap;gap:12px;margin:34px 0 6px}
+  .chip{border:1px solid var(--line2);border-radius:7px;padding:9px 15px;font-size:13.5px;color:var(--ink);background:rgba(255,255,255,.012)}
+  .chip b{font-family:var(--mono);color:var(--cyan);font-weight:600;font-size:12px;letter-spacing:.04em;margin-right:6px}
+  .rule{height:1px;background:var(--line2);margin:34px 0 0;border:none}
+  /* section */
+  section{padding:40px 0 6px}
+  .seclab{font-family:var(--mono);font-size:12.5px;letter-spacing:.18em;color:var(--cyan);text-transform:uppercase;margin-bottom:8px}
+  h2{font-weight:700;font-size:26px;margin:0 0 8px;color:var(--white)}
+  .lede{color:var(--mut);max-width:70ch;margin:0 0 22px;font-size:15.5px}
+  .lede b{color:var(--ink)}
+  /* 底盘四卡 */
+  .panel{background:var(--panel);border:1px solid var(--line2);border-radius:14px;padding:30px 30px 14px;margin-top:6px}
+  .panel .h{font-family:var(--mono);font-size:13px;letter-spacing:.14em;color:var(--cyan);text-transform:uppercase;margin-bottom:6px}
+  .panel h3{font-weight:700;font-size:19px;color:var(--white);margin:0 0 6px}
+  .panel .sub{color:var(--mut);font-size:14.5px;margin:0 0 18px;max-width:66ch}
+  .four{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-top:1px solid var(--line2)}
+  @media(max-width:860px){.four{grid-template-columns:1fr 1fr}}
+  @media(max-width:520px){.four{grid-template-columns:1fr}}
+  .cell{padding:22px 22px 8px;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .cell:nth-child(4n){border-right:none}
+  .cell .no{font-family:var(--mono);font-size:12px;color:var(--cyan);letter-spacing:.08em;margin-bottom:10px}
+  .cell .no i{color:var(--mut);font-style:normal;margin-left:8px}
+  .cell h4{font-weight:700;font-size:16px;color:var(--white);margin:0 0 7px}
+  .cell p{font-size:13.5px;color:var(--ink);margin:0 0 12px;line-height:1.62}
+  .cell code{font-family:var(--mono);font-size:12px;color:var(--cyan2);background:rgba(88,183,202,.08);padding:1px 5px;border-radius:3px}
+  .cell .warn{color:var(--amber)}
+  /* 闸 */
+  .gates{border-top:1px solid var(--line2);margin-top:6px}
+  .gate{padding:26px 0 22px;border-bottom:1px solid var(--line);display:grid;grid-template-columns:190px 1fr;gap:28px}
+  @media(max-width:720px){.gate{grid-template-columns:1fr;gap:10px}}
+  .gate .lft .g{font-family:var(--mono);font-size:12px;color:var(--cyan);letter-spacing:.1em}
+  .gate .lft h3{font-weight:700;font-size:22px;color:var(--white);margin:8px 0 6px;line-height:1.2}
+  .gate .lft .en{font-family:var(--mono);font-size:11.5px;color:var(--cyandim)}
+  .gate .lft .done{display:inline-block;margin-top:10px;font-family:var(--mono);font-size:11px;color:var(--grn);border:1px solid rgba(90,168,137,.4);border-radius:4px;padding:1px 8px}
+  .gate dl{display:grid;grid-template-columns:auto 1fr;gap:5px 14px;margin:0;font-size:14.5px}
+  .gate dt{font-family:var(--mono);font-size:11px;color:var(--cyan);text-transform:uppercase;letter-spacing:.06em;white-space:nowrap;padding-top:3px}
+  .gate dd{margin:0;color:var(--ink)}
+  .gate dd b{color:var(--white)}
+  .gate .src{display:inline-block;margin-top:8px;font-family:var(--mono);font-size:11px;color:var(--cyan);border:1px solid var(--line2);border-radius:4px;padding:1px 8px}
+  /* 阶梯/红线 */
+  .ladder{display:flex;flex-direction:column;gap:8px;margin-top:6px}
+  .rung{display:grid;grid-template-columns:96px 1fr;gap:16px;align-items:baseline;background:var(--panel);border:1px solid var(--line2);border-radius:9px;padding:14px 18px}
+  .rung .w{font-family:var(--mono);font-size:11px;color:var(--cyan);text-transform:uppercase;letter-spacing:.08em}
+  .rung .b{font-size:14.5px;color:var(--ink)}
+  .redline{background:linear-gradient(180deg,#141c26,#0f151e);border:1px solid var(--line2);border-left:3px solid var(--amber);border-radius:11px;padding:22px 26px;margin-top:6px}
+  .redline p{margin:0;font-size:16px;color:var(--white)}
+  .redline b{color:var(--amber)}
+  .now{border:1px solid var(--line2);border-radius:11px;padding:18px 24px;margin-top:16px;background:var(--panel);color:var(--ink);font-size:14.5px}
+  .now b{color:var(--cyan2)}
+  .foot{padding:26px 0 56px;color:var(--mut);font-size:13px;font-family:var(--mono);letter-spacing:.06em;display:flex;align-items:center;gap:16px}
+  .foot .ln{flex:1;height:1px;background:var(--line2)}
+  @media(max-width:640px){h1{font-size:52px}.col{padding:0 22px}}
+  @media(prefers-reduced-motion:no-preference){section,.hd{animation:f .5s ease both}@keyframes f{from{opacity:0;transform:translateY(8px)}to{opacity:1}}}
+</style>
+
+<div class="wrap">
+  <div class="col">
+    <header class="hd">
+      <div class="eyebrow">记忆系统 · 调研落地 · 施工图 V1</div>
+      <h1>五道闸门，<br>一套底盘<span class="dot">。</span></h1>
+      <p class="intro">五个问题不是五件孤立的活，是一条链：<span class="cy">写入归一 → 主体归属 → 遗忘收口 → 统一删除 → 防固化自纠</span>。它们共用同一批零件——所以<b>先把底盘打好</b>，五道闸各自只是接一段管子。下面每问一格：主流谁在用、我们抄谁（挑最轻最稳）、怎么落地、加多少成本。</p>
+      <div class="chips">
+        <span class="chip"><b>底座</b>SQLite 知识图谱</span>
+        <span class="chip"><b>写前判定</b>mem0 式 ADD/UPDATE/NOOP</span>
+        <span class="chip"><b>人读层</b>markdown 四区</span>
+        <span class="chip"><b>检索</b>向量 + FTS5</span>
+        <span class="chip"><b>在场</b>船主可亲核</span>
+      </div>
+      <hr class="rule">
+    </header>
+
+    <section>
+      <div class="panel">
+        <div class="h">先装底盘 · 五道闸都吃这四个零件</div>
+        <p class="sub">这四样一次装好，后面 5 个方案几乎零改造就能接。别一个问题一套机制——它们本来就是同一套东西的不同用法。</p>
+        <div class="four">
+          <div class="cell">
+            <div class="no">01 <i>边表加两列</i></div>
+            <h4>双时间轴失效</h4>
+            <p>给边表加 <code>valid_to</code> / <code>expired_at</code>。事实被推翻不删、只关有效窗口。检索默认 <code>WHERE valid_to IS NULL</code>。抄 Zep/Graphiti。</p>
+          </div>
+          <div class="cell">
+            <div class="no">02 <i>稳定共享 ID</i></div>
+            <h4>source_id 回指</h4>
+            <p>每条事实一个 UUID，摘要挂 <code>[src:uuid]</code>、图谱边存 source_ids 数组、向量 payload 带 source_id。删除时 O(1) 找齐所有派生副本。</p>
+          </div>
+          <div class="cell">
+            <div class="no">03 <i>一次 LLM 判定</i></div>
+            <h4>写前守门</h4>
+            <p>新事实 + 语义相近旧事实一起喂 LLM，出 ADD/UPDATE/INVALIDATE/NOOP。归一、归属、矛盾闸全塞进这一次调用，不加次数。</p>
+          </div>
+          <div class="cell">
+            <div class="no">04 <i>船主在场</i></div>
+            <h4>待亲核队列</h4>
+            <p>低置信/高风险的不自动落盘，进队列等船主一键拍板。你档案核 <span class="warn">⚠️待亲核</span> 那套，制度化进代码即可。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="foot" style="padding:8px 0 4px"><span>GATE 01–05</span><span style="color:var(--ink)">五道闸 · 逐个落地</span><span class="ln"></span></div>
+      <div class="gates">
+
+        <div class="gate">
+          <div class="lft"><div class="g">GATE 01</div><h3>归一</h3><div class="en">entity resolution</div><div class="done">已落地</div></div>
+          <dl>
+            <dt>病</dt><dd>老李/老板/李工/李先生……被当成好几个不同的人，关于你的记忆碎成几堆。</dd>
+            <dt>抄谁</dt><dd>Graphiti 的实体解析四步 + LINK-KG 的<b>别名 cache</b>（别名写入时学出来、不手填）。</dd>
+            <dt>怎么落地</dt><dd>一张别名表 seed（老板/主人→当前用户）+ 熵门控的模糊匹配（名字够长够独特才敢合并），绝不把两个真不同的人合成一个。</dd>
+            <dt>成本</dt><dd>几乎零——抽取那次调用顺带判。</dd>
+          </dl>
+        </div>
+
+        <div class="gate">
+          <div class="lft"><div class="g">GATE 02</div><h3>主体归属</h3><div class="en">attribution</div><div class="done">已落地</div></div>
+          <dl>
+            <dt>病</dt><dd>把老板的居住地/职业，错挂到某个员工头上。</dd>
+            <dt>抄谁</dt><dd>Graphiti 四条硬规则（说话人优先/代词消解到人名/占有者限定/两个明确节点）+ mem0 attributed_to；必须补 <b>Graphiti #1171</b>。</dd>
+            <dt>怎么落地</dt><dd>纯 prompt + 写前判定<b>按同一主体圈候选、绝不跨主体比</b>——防错挂的关键闸门。</dd>
+            <dt>成本</dt><dd>零成本，纯提示词。</dd>
+          </dl>
+        </div>
+
+        <div class="gate">
+          <div class="lft"><div class="g">GATE 03</div><h3>遗忘 · 收口</h3><div class="en">forgetting</div><div class="done">已落地</div></div>
+          <dl>
+            <dt>病</dt><dd>只增不减、越攒越肿，噪音把真东西淹了（mem0 本身没有遗忘）。</dd>
+            <dt>抄谁</dt><dd>Ebbinghaus 艾宾浩斯衰减（MemoryBank/SSGM）：随时间衰减、随命中回血的强度分。</dd>
+            <dt>怎么落地</dt><dd>久未命中的<b>推断</b>边随时间淡出活跃层；<b>你亲口说的、钉住的永不淡</b>。原话/历史仍在。</dd>
+            <dt>成本</dt><dd>离线批量、可缓，胖了再跑。</dd>
+          </dl>
+        </div>
+
+        <div class="gate">
+          <div class="lft"><div class="g">GATE 04</div><h3>统一删除</h3><div class="en">unified delete</div><div class="done">已落地</div></div>
+          <dl>
+            <dt>病</dt><dd>删一处、别处还留着，残影自相矛盾（mem0 真实 bug #3245：删了向量库、忘删图谱）。</dd>
+            <dt>抄谁</dt><dd>单一真相源 + 稳定 ID 回指 + 可靠传播（outbox 单事务 + 级联 + 黑名单防再长回来）。</dd>
+            <dt>怎么落地</dt><dd>跨层统一删——删"关于你"一条，图谱 + 船主档案<b>同一件事一起清</b>；原始流水按 ground truth 留着当撤销底。</dd>
+            <dt>成本</dt><dd>低，一次事务级联。</dd>
+          </dl>
+        </div>
+
+        <div class="gate" style="border-bottom:none">
+          <div class="lft"><div class="g">GATE 05</div><h3>防固化 · 自纠</h3><div class="en">anti-ossify</div><div class="done">已落地</div></div>
+          <dl>
+            <dt>病</dt><dd>一条错记忆/错教导反复蒸馏，滚雪球固化成"性格"（"微辣→辣→无辣不欢"）。</dd>
+            <dt>抄谁</dt><dd>Zep 双时态（矛盾才失效）+ SSGM 写前矛盾闸 + <b>流水对账</b>（原则必须有原始流水撑着）+ 生成式agent 增量式（老原则原样留、不整段重写）。</dd>
+            <dt>怎么落地</dt><dd>蒸原则前过两道闸：流水对账（没据不升）+ 矛盾闸（碰根本底线不升）；巩固改增量式，只加不重写、矛盾才删。</dd>
+            <dt>成本</dt><dd>蒸馏那次调用顺带判。</dd>
+          </dl>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="seclab">阶梯</div>
+      <h2>施工优先级（当初的排法）</h2>
+      <div class="ladder">
+        <div class="rung"><span class="w">先做</span><span class="b">GATE 02 归属四条硬规则 · GATE 03/04 失效非删除 + source_id（3/4/5 的地基，零成本）</span></div>
+        <div class="rung"><span class="w">接着做</span><span class="b">GATE 04 统一删除 + 向量防残影（私密数据，删不干净是硬伤）· GATE 01 归一</span></div>
+        <div class="rung"><span class="w">最后做</span><span class="b">GATE 05 遗忘衰减 + 防固化对账（长期健康，数据没爆不急）——但受保护白名单接口现在就留位</span></div>
+      </div>
+    </section>
+
+    <section>
+      <div class="seclab">红线</div>
+      <h2>唯一硬红线</h2>
+      <div class="redline"><p><b>她的宪法、她的边界，是受保护核心（M_core 白名单），蒸馏/对账永远不许覆写。</b>五道闸再自动，这条只由人手动改——"防错误固化"最后、也最重的一道保险。</p></div>
+      <div class="now"><b>现状：五道闸全部已落地、接进活流程。</b>提交链 f4c317e→2fb0f1b→c95b571→2e98c1d→a8ab7c0；第四幕全量 soak（1033 场/116 天）验过：图谱现值 216→77、误固化探针 8/8 守住、漂移锚点跟对、稳定底事实全稳。</div>
+    </section>
+
+    <div class="foot"><span>MEMORY · 五道闸 · V1</span><span class="ln"></span><span>配套《记忆系统全图》讲整套怎么运转</span></div>
+  </div>
+</div>

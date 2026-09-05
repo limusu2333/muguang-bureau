@@ -1,0 +1,292 @@
+<meta charset="UTF-8">
+<title>记忆系统全图</title>
+<style>
+  :root{
+    --纸:#f4f1e9; --卡:#fbf9f3; --炭:#17151a; --墨:#251f1a; --次:#6d6259;
+    --线:#e4ddcf; --线深:#d3c9b7; --酒:#9d5a2c; --金:#c47f2c; --浅金:#e8d4a8;
+    --绿:#4f7d5c; --琥珀:#a8822f;
+    --serif:"Songti SC","STSong","Noto Serif SC",Georgia,serif;
+    --sans:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
+    --mono:"SF Mono","Menlo","Consolas",monospace;
+  }
+  *{box-sizing:border-box}
+  .wrap{background:var(--纸);color:var(--墨);font-family:var(--sans);line-height:1.72;
+    font-size:16px;-webkit-font-smoothing:antialiased}
+  .col{max-width:820px;margin:0 auto;padding:0 22px}
+  /* ── 顶头 ── */
+  .top{background:var(--炭);color:#efe9df;padding:52px 0 44px;border-bottom:3px solid var(--酒)}
+  .top .col{max-width:820px}
+  .kk{font-family:var(--mono);font-size:12px;letter-spacing:.28em;color:var(--金);text-transform:uppercase}
+  .top h1{font-family:var(--serif);font-weight:600;font-size:40px;line-height:1.12;margin:14px 0 10px;
+    text-wrap:balance;color:#f6efe4}
+  .top p{margin:0;color:#b8ada0;font-size:16px;max-width:56ch}
+  .top .红{color:var(--金)}
+  /* ── 章节 ── */
+  section{padding:40px 0 8px;border-bottom:1px solid var(--线)}
+  section:last-of-type{border-bottom:none}
+  .eyebrow{display:flex;align-items:baseline;gap:12px;margin-bottom:6px}
+  .num{font-family:var(--mono);font-size:13px;color:var(--酒);font-weight:600;letter-spacing:.05em}
+  h2{font-family:var(--serif);font-weight:600;font-size:25px;margin:2px 0 4px;color:var(--墨);text-wrap:balance}
+  .lede{color:var(--次);margin:0 0 20px;max-width:64ch}
+  h3{font-family:var(--serif);font-size:18px;font-weight:600;margin:0 0 4px}
+  p{margin:0 0 14px}
+  b,strong{color:#1c1712}
+  .酒字{color:var(--酒);font-weight:600}
+  /* ── 两大块 ── */
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:6px 0 8px}
+  @media(max-width:620px){.two{grid-template-columns:1fr}}
+  .block{background:var(--卡);border:1px solid var(--线深);border-radius:8px;padding:18px 18px 6px}
+  .block .tag{font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--酒);text-transform:uppercase}
+  .block h3{margin-top:6px}
+  .block p{font-size:15px;color:var(--次)}
+  /* ── 抽屉/事实卡 ── */
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:4px 0 10px}
+  @media(max-width:620px){.grid{grid-template-columns:1fr}}
+  .card{background:var(--卡);border:1px solid var(--线);border-left:3px solid var(--酒);
+    border-radius:6px;padding:14px 16px 4px}
+  .card .h{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+  .card h3{font-size:16px}
+  .card .meta{font-family:var(--mono);font-size:11px;color:var(--琥珀);white-space:nowrap}
+  .card p{font-size:14.5px;color:var(--次);margin-bottom:12px}
+  /* ── 循环流 ── */
+  .flow{display:flex;gap:0;align-items:stretch;margin:8px 0 14px;flex-wrap:wrap}
+  .step{flex:1 1 200px;background:var(--卡);border:1px solid var(--线深);border-radius:8px;padding:16px;position:relative}
+  .step+.step{margin-left:26px}
+  .step+.step::before{content:"→";position:absolute;left:-22px;top:50%;transform:translateY(-50%);
+    color:var(--酒);font-size:20px;font-weight:700}
+  @media(max-width:680px){.step+.step{margin-left:0;margin-top:26px}
+    .step+.step::before{left:50%;top:-22px;transform:translateX(-50%);content:"↓"}}
+  .step .when{font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--酒);text-transform:uppercase}
+  .step h3{font-size:16px;margin:6px 0 6px}
+  .step p{font-size:14px;color:var(--次);margin-bottom:0}
+  /* ── 技术点 ── */
+  .tech{border:1px solid var(--线);border-radius:8px;overflow:hidden;margin:4px 0 12px}
+  .tech .row{display:grid;grid-template-columns:1fr;padding:16px 18px;border-top:1px solid var(--线)}
+  .tech .row:first-child{border-top:none}
+  .tech .row:nth-child(odd){background:var(--卡)}
+  .tech .name{font-family:var(--serif);font-size:17px;font-weight:600;margin-bottom:3px}
+  .tech .name .en{font-family:var(--mono);font-size:11.5px;color:var(--酒);font-weight:400;margin-left:8px;letter-spacing:.02em}
+  .tech .say{margin:0 0 8px;font-size:15px}
+  .tech .fix{font-size:13.5px;color:var(--次);display:flex;gap:8px;align-items:baseline}
+  .tech .fix .lab{font-family:var(--mono);font-size:10.5px;color:var(--琥珀);text-transform:uppercase;letter-spacing:.08em;flex:0 0 auto;padding-top:2px}
+  .src{display:inline-block;font-family:var(--mono);font-size:11px;color:var(--酒);background:rgba(157,90,44,.09);
+    border:1px solid rgba(157,90,44,.22);border-radius:4px;padding:1px 7px;margin-top:8px}
+  /* ── delta 条 ── */
+  .delta{background:var(--炭);color:#e9e2d6;border-radius:10px;padding:24px 26px;margin:8px 0 12px}
+  .delta .from{color:#a99; text-decoration:line-through;text-decoration-color:#6b4a3a}
+  .delta .to{color:var(--金);font-weight:600}
+  .delta p{margin:0 0 6px;font-size:16px}
+  .delta .fine{color:#9a8f82;font-size:13.5px;margin-top:10px}
+  /* ── 文件表 ── */
+  .tblwrap{overflow-x:auto;border:1px solid var(--线);border-radius:8px;margin:4px 0 14px}
+  table{border-collapse:collapse;width:100%;font-size:14px;min-width:460px}
+  th,td{text-align:left;padding:11px 15px;border-top:1px solid var(--线);vertical-align:top}
+  th{background:var(--卡);font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--酒)}
+  td.f{font-family:var(--mono);font-size:12.5px;color:#4a3f36;white-space:nowrap}
+  tr:nth-child(even) td{background:rgba(251,249,243,.6)}
+  /* ── 小结脚 ── */
+  .foot{padding:30px 0 46px;color:var(--次);font-size:14px}
+  .foot .col > p{max-width:66ch}
+  .pin{border-left:3px solid var(--金);padding:4px 0 4px 15px;margin:14px 0;color:#463b30;font-size:15px}
+  @media(prefers-reduced-motion:no-preference){
+    section,.top{animation:f .5s ease both}@keyframes f{from{opacity:0;transform:translateY(8px)}to{opacity:1}}
+  }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="col">
+      <div class="kk">MEMORY · 全图</div>
+      <h1>记忆系统，一页拿住</h1>
+      <p>从最简的两大块，到每个抽屉、一天的循环、和藏在底下的核心技术——<span class="红">全用人话讲透</span>。看完这一页，这套系统是你的，不是架空你的黑箱。</p>
+    </div>
+  </header>
+
+  <div class="col">
+
+    <section>
+      <div class="eyebrow"><span class="num">00</span></div>
+      <h2>它到底干嘛的</h2>
+      <p class="lede">一个每聊完就忘光的员工，没法用。记忆系统就是<b>公司怎么记住事</b>——记得<b>发生过什么</b>、记得<b>学到的规矩</b>、记得<b>你是谁</b>。三件事，一件都不能断。</p>
+    </section>
+
+    <section>
+      <div class="eyebrow"><span class="num">01</span><span></span></div>
+      <h2>最简：记忆就分两大块</h2>
+      <p class="lede">别被一堆名词吓到。往下拆多深，根上就这两块。</p>
+      <div class="two">
+        <div class="block">
+          <div class="tag">按人分</div>
+          <h3>每个员工自己的记忆</h3>
+          <p>老钟、老梁、阿强、老纪、阿言，五个人<b>各有一本册子</b>。记他自己干过的活、学到的做事规矩、你给他立的规矩。记忆跟着人走。</p>
+        </div>
+        <div class="block">
+          <div class="tag">关于你</div>
+          <h3>关于「当前主人」的记忆</h3>
+          <p>全公司<b>共享一份</b>。专门记你：你是谁、住哪、用什么机器、最近什么状态、心情往上还是往下。让每个员工都认得你。</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="eyebrow"><span class="num">02</span></div>
+      <h2>员工的册子 · 四个抽屉</h2>
+      <p class="lede">每个员工的册子，分四格。从"生的原料"到"熟的规矩"，一层比一层提炼。</p>
+      <div class="grid">
+        <div class="card">
+          <div class="h"><h3>记事（流水）</h3><span class="meta">只加不改 · 铁底</span></div>
+          <p>流水账。每聊完一场，把发生的事按原话记下来，<b>只往上加、永不改动</b>。这是"地面真值"——摘要哪天理岔了，翻回这儿能查到当初到底说了啥。</p>
+        </div>
+        <div class="card">
+          <div class="h"><h3>近况</h3><span class="meta">滚动一小段</span></div>
+          <p>一小段话："他最近在忙啥、什么状态"。每次巩固时重写，永远只反映当下。</p>
+        </div>
+        <div class="card">
+          <div class="h"><h3>原则</h3><span class="meta">攒出来的</span></div>
+          <p>从流水和你的叮嘱里<b>蒸出来的"该怎么做事"的规矩</b>。比如"先方案后动手""上线要留后路"。这是员工的"做事性格"。</p>
+        </div>
+        <div class="card">
+          <div class="h"><h3>叮嘱（船主教导）</h3><span class="meta">你亲口立的</span></div>
+          <p>你<b>亲口</b>给他立的规矩。原话不动，你随时能在记忆库里改、删。这是最可信的一格。</p>
+        </div>
+      </div>
+      <div class="pin">唤醒员工干活时，这四格<b>整个喂给它</b>（原则/叮嘱/近况全量，流水带最近十来条+按需搜）——所以它一开口就"记得"。</div>
+    </section>
+
+    <section>
+      <div class="eyebrow"><span class="num">03</span></div>
+      <h2>关于你的记忆 · 两份（硬 + 软）</h2>
+      <p class="lede">一份记"硬事实"、会自我纠正；一份记"软状态"、有温度。互补。</p>
+      <div class="two">
+        <div class="block">
+          <div class="tag">硬 · 结构化</div>
+          <h3>图谱</h3>
+          <p>把关于你的事实拆成<b>"谁—什么—值"</b>的三元组，带日期：<i>示例用户—居住地—示例城市</i>、<i>示例用户—主力机身—示例设备</i>。只认十种关系（职业/居住地/主力机身/用/拍/在意的人/说过要做/当前状态/偏好/有过）。它最大的本事是<b>会自我纠正</b>：换了机身，旧的自动作废、留最新的。</p>
+        </div>
+        <div class="block">
+          <div class="tag">软 · 有温度</div>
+          <h3>船主档案（船主.md）</h3>
+          <p>记图谱装不下的软东西，五格：<b>基本事实</b>（你是谁）、<b>偏好</b>（在意啥）、<b>状态流水</b>（每天什么心情）、<b>当前状态基调</b>（这阵子往上还是往下）、<b>说过要做的事</b>。</p>
+        </div>
+      </div>
+      <p style="margin-top:6px;color:var(--次);font-size:14.5px">另外还有两个"配角"：<b>会话摘要</b>——每天自动记一行"今天大致聊了啥"；<b>向量检索</b>——想找旧事时，能<b>按意思</b>搜（不是只按关键词），"上次说的那个调色的事"也能捞出来。</p>
+    </section>
+
+    <section>
+      <div class="eyebrow"><span class="num">04</span></div>
+      <h2>记忆怎么"活"：一天的循环</h2>
+      <p class="lede">记忆不是死在硬盘上的表格，它一天里走三步——写进去、夜里理、用时喂。</p>
+      <div class="flow">
+        <div class="step">
+          <div class="when">白天 · 写</div>
+          <h3>聊完就抽取</h3>
+          <p>每场对话一收尾，系统自动把"该记的"抽出来，分门别类塞进各层：员工流水、图谱事实、关于你的状态。</p>
+        </div>
+        <div class="step">
+          <div class="when">整理 · 巩固</div>
+          <h3>用时补账</h3>
+          <p>把流水蒸成原则、更新近况、给事实对账去矛盾、冷事实淡出。<b>不是半夜定时器</b>——你每天头一回跟公司说话时顺手触发一次。</p>
+        </div>
+        <div class="step">
+          <div class="when">用时 · 喂</div>
+          <h3>唤醒即注入</h3>
+          <p>要哪个员工干活，先把"你是谁+你此刻状态+相关事实+它自己那四格"打包喂给它——它才带着记忆开口。</p>
+        </div>
+      </div>
+      <div class="pin"><b>"巩固"什么时候真跑？</b>不是半夜两点的定时器。是你<b>每天第一次跟公司说话</b>时顺手触发一次（每人每天最多一次）。所以<b>电脑关着、公司没开都不会漏</b>——下次用它时，把隔的这些天一起补上。这正是为你这种"不是 24 小时开机"的个人机器设计的：没有会被错过的定时任务。<br><span style="color:var(--次);font-size:13.5px">（间歇使用也不丢：隔十天半月回来，落下的活跃日"会话摘要"会一次补齐，原则/近况/图谱也都正常补上。）</span></div>
+    </section>
+
+    <section>
+      <div class="eyebrow"><span class="num">05</span></div>
+      <h2>核心技术点 · 人话点透</h2>
+      <p class="lede">这九样是系统真正的"手艺"，也是你最该拿住的。每样：<b>它干嘛</b> · <b>治什么病</b> · <b>抄谁的</b>。全是抄被验证过的，不是我们手搓。</p>
+      <div class="tech">
+        <div class="row">
+          <div class="name">写前判定<span class="en">mem0</span></div>
+          <p class="say">落一条新事实前，先翻翻有没有类似的——有就<b>改</b>、重了就<b>跳过</b>、真新才<b>加</b>。不闷头往上堆。</p>
+          <div class="fix"><span class="lab">治</span><span>重复灌一堆、或用垃圾值盲目盖掉好的。</span></div>
+        </div>
+        <div class="row">
+          <div class="name">失效非删除<span class="en">Zep 双时态</span></div>
+          <p class="say">事实变了<b>不删旧的</b>，只给它盖个"从这天起不算数了"的时间戳。历史留着能回放，问"现在"只给最新的。</p>
+          <div class="fix"><span class="lab">治</span><span>换机身、搬家这类变化：旧值既不该消失、也不该还冒充"现在"。</span></div>
+        </div>
+        <div class="row">
+          <div class="name">归一 · 别名<span class="en">Graphiti</span></div>
+          <p class="say">老板、主人、同一个人的别名……<b>归一到同一个用户主体</b>，不碎成好几个人。</p>
+          <div class="fix"><span class="lab">治</span><span>称呼一多，关于你的记忆散成好几堆、各记各的。</span></div>
+        </div>
+        <div class="row">
+          <div class="name">归属 · 防张冠李戴<span class="en">Graphiti #1171</span></div>
+          <p class="say">你说的事记<b>你</b>头上，员工干的活记<b>员工</b>头上，绝不互相安错。</p>
+          <div class="fix"><span class="lab">治</span><span>把老板的居住地、职业错挂到某个员工身上。</span></div>
+        </div>
+        <div class="row">
+          <div class="name">防误固化<span class="en">流水对账 + 矛盾闸</span></div>
+          <p class="say">一句气话、随口话、或一条错的教导，<b>不会被当成"做人原则"记一辈子</b>——得在真发生的流水里有据、且不跟根本底线（认真测试/诚实/守边界）冲突，才准升成原则。</p>
+          <div class="fix"><span class="lab">治</span><span>取消待审门后，错话直接进叮嘱、又被夜里蒸成"性格"。（实测逮到过：喂"所有代码不用测试"真被固化，加闸后拦住。）</span></div>
+          <span class="src">抄 SSGM · Graphiti</span>
+        </div>
+        <div class="row">
+          <div class="name">巩固 · 增量式<span class="en">最新改动</span></div>
+          <p class="say">巩固整理时，<b>老规矩原样留着不重写</b>，只往上加新的、只在被流水<b>明确顶翻</b>时才删。不再"整段重写"。</p>
+          <div class="fix"><span class="lab">治</span><span>像复印件再复印——旧摘要反复喂回去重写，会越理越歪（"微辣→辣→无辣不欢"）；还会因"最近没提到"误删老规矩。</span></div>
+          <span class="src">抄 Zep · 生成式agent · Letta</span>
+        </div>
+        <div class="row">
+          <div class="name">遗忘 · 衰减<span class="en">艾宾浩斯</span></div>
+          <p class="say">冷门的、没人再用的"推断"事实，随时间<b>慢慢淡出</b>，压住无限膨胀。你<b>亲口说的、钉住的，永不淡</b>。</p>
+          <div class="fix"><span class="lab">治</span><span>只增不减、越攒越肿，噪音把真东西淹了。</span></div>
+        </div>
+        <div class="row">
+          <div class="name">跨层统一删除<span class="en"></span></div>
+          <p class="say">你在"关于你"删一条事实，图谱和船主档案里<b>同一件事一起清</b>，不留残影。</p>
+          <div class="fix"><span class="lab">治</span><span>删一处、别处还留着，自相矛盾。</span></div>
+        </div>
+        <div class="row">
+          <div class="name">情感register<span class="en">判定门读情绪</span></div>
+          <p class="say">每轮先读一眼你<b>此刻的情绪</b>（平静/累/烦/低落/脆弱/高兴），难过时话放软、先接住，别甩进度、别尬吹。判定门要是挂了就<b>大声报错，绝不编个假"平静"</b>糊弄。</p>
+          <div class="fix"><span class="lab">治</span><span>你随口一句寒暄，五个员工回你五份公文汇报；你哀伤，它跟你聊色板。</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="eyebrow"><span class="num">06</span></div>
+      <h2>这一程，到底把它变成了啥</h2>
+      <div class="delta">
+        <p><span class="from">只会往上堆 · 会漂移 · 把错的固化成性格 · 越攒越肿</span></p>
+        <p>→ <span class="to">会自我纠正 · 防固化 · 防漂移 · 有边界</span></p>
+        <p class="fine">每一步都抄了被工业界/学术界验证过的做法（mem0 · Zep/Graphiti · SSGM · 生成式agent · Letta），不是闭门手搓。改动都带提交记录、都验过。</p>
+      </div>
+    </section>
+
+    <section>
+      <div class="eyebrow"><span class="num">07</span></div>
+      <h2>想深挖时，去哪看</h2>
+      <p class="lede">哪天你想亲自翻代码，这张表告诉你每块住在哪个文件。</p>
+      <div class="tblwrap">
+        <table>
+          <thead><tr><th>文件</th><th>管什么</th></tr></thead>
+          <tbody>
+            <tr><td class="f">记忆抽取.py</td><td>对话一结束，把该记的抽出来、分门别类塞进各层</td></tr>
+            <tr><td class="f">图记忆.py · 图谱.db</td><td>关于你的<b>结构化事实（图谱）</b>；失效非删除、归一、归属、遗忘都在这</td></tr>
+            <tr><td class="f">船主记忆.py · 船主.md</td><td>关于你这个人的<b>软档案</b>：基本事实/偏好/状态走势/待办</td></tr>
+            <tr><td class="f">记忆巩固.py</td><td>每晚整理：增量蒸原则、更新近况、给事实对账去矛盾</td></tr>
+            <tr><td class="f">记忆向量.py</td><td>按<b>意思</b>搜记忆（语义检索）</td></tr>
+            <tr><td class="f">会话摘要.py</td><td>每天自动记一行"今天大致聊了啥"</td></tr>
+            <tr><td class="f">活_本人.py</td><td>员工四抽屉的读写 + 唤醒时把记忆<b>注入</b>给员工</td></tr>
+            <tr><td class="f">语义检索.py · 大厅检索.py</td><td>翻历史、搜近期的工具</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <div class="foot">
+    <div class="col">
+      <p class="pin">一句话记牢：<b>生的（流水）永远留着当底 → 熟的（近况/原则/图谱/档案）是从底下派生出来、可以纠正的 → 用的时候按相关挑着喂。</b>这三句串起整套系统。</p>
+      <p>这份是给你的地图。哪块你想再往深里问、或想让它换个说法，随时叫我——你是船主，这套系统得攥在你手里。</p>
+    </div>
+  </div>
+</div>
